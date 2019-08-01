@@ -5,7 +5,7 @@ import * as Fields from './fields';
 export default class FormField extends Component {
   constructor(props) {
     super(props);
-    this.onResetValue = this.onResetValue.bind(this);
+    this.onReset = this.onReset.bind(this);
   }
 
   // 注册类型组件
@@ -14,15 +14,15 @@ export default class FormField extends Component {
   }
 
   componentDidMount() {
-    const { field } = this.props;
+    const { config, emitter } = this.props;
     // 绑定 resetOption 事件回调
-    if (this.fieldRef.onResetValue) {
-      this.props.formStore.emitter.on(`${field.name}:onResetValue`, this.onResetValue)
+    if (this.fieldRef.onReset) {
+      emitter.on(`${config.name}:onreset`, this.onReset)
     }
   }
 
-  onResetValue() {
-    this.fieldRef.onResetValue.call(this.fieldRef);
+  onReset(data) {
+    this.fieldRef.onReset.call(this.fieldRef,data);
   }
 
   bindRef(fieldRef) {
@@ -30,21 +30,28 @@ export default class FormField extends Component {
   }
 
   renderField() {
-    const { field, formStore, form: { getFieldDecorator }, labelCol, wrapperCol } = this.props;
-    const type = field.type;
+    const { config, form, labelCol, wrapperCol } = this.props;
+    const { getFieldDecorator } = form;
+    const type = config.type;
     const FieldComp = FormField[type] || null;
+
     if (!FieldComp) {
       return null;
     }
+
     return (
       <Form.Item
         labelCol={labelCol}
         wrapperCol={wrapperCol}
-        label={field.label} >
+        label={config.label} >
         {
-          getFieldDecorator(field.name, {
-            rules: field.rules || []
-          })(<FieldComp ref={this.bindRef.bind(this)} config={field} formStore={formStore} />)
+          getFieldDecorator(config.name, {
+            rules: config.rules || []
+          })(<FieldComp
+            ref={this.bindRef.bind(this)}
+            config={config}
+            form={form} />
+          )
         }
       </Form.Item>
     )
@@ -59,10 +66,10 @@ export default class FormField extends Component {
   }
 
   componentWillUnmount() {
-    const { field } = this.props;
+    const { config, emitter } = this.props;
 
-    if (this.fieldRef.onResetValue) {
-      this.props.formStore.emitter.off(`${field.name}:onResetValue`, this.onResetValue);
+    if (this.fieldRef.onReset) {
+      emitter.off(`${config.name}:onreset`, this.onReset);
     }
   }
 }

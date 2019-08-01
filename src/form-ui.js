@@ -2,44 +2,64 @@ import React, { Component } from 'react'
 import { Form, Col } from 'antd';
 import Field from './form-field';
 import FieldGroup from './form-group';
-import './index.css';
-
-const DefaultItemCol = {};
-const DefaultLabelCol = {};
-const DefaultWrapperCol = {};
+import './index.less';
 
 class formUI extends Component {
   renderFields() {
-    const { fields, groups } = this.props.formStore;
+    const { formConfig } = this.props;
+    const { fields, groups, style = {} } = formConfig;
+
+    if (!groups) {
+      return this.renderArea(fields, style);
+    }
+
     return groups.map((group) => {
-      // 获取分组样式
-      const groupFields = fields.filter((item) => item.group == group.name && item.visible !== false);
-      const groupStyle = group.style;
-      const groupItemStyle = groupStyle && groupStyle.itemCol || DefaultItemCol;
-      const groupLabelCol = groupStyle && groupStyle.labelCol || DefaultLabelCol;
-      const groupWrapperCol = groupStyle && groupStyle.wrapperCol || DefaultWrapperCol;
+      const currentFields = fields.filter((item) =>
+        item.group == group.name && item.visible !== false
+      );
+
+      const style = group.style || formConfig.style || null;
+      const itemCol = style && style.itemCol || null;
+      const labelCol = style && style.labelCol || null;
+      const wrapperCol = style && style.wrapperCol || null;
+
       return (
         <FieldGroup title={group.title} key={group.name}>
-          {groupFields.map((item) => {
-            // 对于字段：继承或覆盖分组样式
-            const fieldStyle = item.style;
-            const fieldItemStyle = fieldStyle && fieldStyle.itemCol || groupItemStyle;
-            const fieldLabelCol = fieldStyle && fieldStyle.labelCol || groupLabelCol;
-            const fieldWrapperCol = fieldStyle && fieldStyle.wrapperCol || groupWrapperCol;
-            return (
-              <Col  {...fieldItemStyle} key={item.name}>
-                <Field
-                  labelCol={fieldLabelCol}
-                  wrapperCol={fieldWrapperCol}
-                  formStore={this.props.formStore}
-                  form={this.props.form} field={item} />
-              </Col>
-            )
-          })}
+          {this.renderArea(
+            currentFields, {
+              itemCol,
+              labelCol,
+              wrapperCol
+            }
+          )}
         </FieldGroup>
       )
-
     });
+  }
+
+  renderArea(fields, parentStyle) {
+    const { formConfig, emitter } = this.props;
+
+    return (
+      fields.map((item) => {
+        // 对于字段：继承或覆盖分组样式
+        const style = item.style;
+        const itemCol = style && style.itemCol || parentStyle.itemCol || {};
+        const labelCol = style && style.labelCol || parentStyle.labelCol || {};
+        const wrapperCol = style && style.wrapperCol || parentStyle.wrapperCol || {};
+        return (
+          <Col  {...itemCol} key={item.name}>
+            <Field
+              labelCol={labelCol}
+              wrapperCol={wrapperCol}
+              emitter={emitter}
+              formConfig={formConfig}
+              form={this.props.form}
+              config={item} />
+          </Col>
+        )
+      })
+    )
   }
 
   componentDidMount() {

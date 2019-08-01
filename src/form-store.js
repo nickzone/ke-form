@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
 import Emitter from 'component-emitter';
+import FormAjax from './form-ajax';
+import { getFieldByName } from './utils';
+
 export default function FormStore(Comp) {
   class EmitterWrapper extends Component {
     constructor(props) {
       super(props);
-      // 内部emitter
+
       this.emitter = new Emitter();
+
       this.state = {
-        // 表单值 map 格式：{field_1: 123, field_2: 234}
         formData: this.props.formData || {},
-        // 表单上下文 map 格式: {key1: aaaa, key2}
-        formContext: this.props.formContext || {},
-        // 表单配置
-        formConfig: this.props.formConfig || [] // 表单配置
+        formConfig: this.props.formConfig || []
       };
+      
       // 遍历字段配置
       this.state.formConfig.fields.forEach((field) => {
         // 注册通用回调
@@ -29,45 +30,34 @@ export default function FormStore(Comp) {
      * @param {*} field 当前字段配置
      */
     bindHandle(field) {
-      // 注册 changeValue 回调
+      // 注册 change 回调
       this.emitter.on(
-        `${field.name}:changeValue`,
+        `${field.name}:change`,
         (data, reset) => this.handle({
-          eventTarget: field.name,
-          eventType: 'changeValue',
+          target: field.name,
+          type: 'change',
           data,
           option: {
             reset
           }
         })
       );
-      // 注册 resetValue 回调
+      // 注册 reset 回调
       this.emitter.on(
-        `${field.name}:resetValue`,
+        `${field.name}:reset`,
         () => this.handle({
-          eventTarget: field.name,
-          eventType: 'resetValue'
+          target: field.name,
+          type: 'reset'
         })
       );
       // 注册 toggleVisible 回调
       this.emitter.on(
         `${field.name}:toggleVisible`,
         (visible) => this.handle({
-          eventTarget: field.name,
-          eventType: 'toggleVisible',
+          target: field.name,
+          type: 'toggleVisible',
           option: {
             visible
-          }
-        })
-      )
-
-      this.emitter.on(
-        `${field.name}:toggleRequired`,
-        (required) => this.handle({
-          eventTarget: field.name,
-          eventType: 'toggleRequired',
-          option: {
-            required
           }
         })
       )
@@ -76,8 +66,8 @@ export default function FormStore(Comp) {
       this.emitter.on(
         `${field.name}:toggleDisabled`,
         (disabled) => this.handle({
-          eventTarget: field.name,
-          eventType: 'toggleDisabled',
+          target: field.name,
+          type: 'toggleDisabled',
           option: {
             disabled
           }
@@ -91,15 +81,15 @@ export default function FormStore(Comp) {
      * @param {*} field 当前字段配置
      */
     bindDependHandle(field) {
-      if (field.depends) {
+      if (field.dependEvents) {
         // 遍历依赖,注册依赖关系
-        field.depends.forEach((depend) => {
+        field.dependEvents.forEach((depend) => {
           const handler = Array.isArray(depend.handler) ?
             depend.handler : [depend.handler];
 
           handler.forEach((item) => {
             this.emitter.on(
-              `${depend.eventTarget}:${depend.eventType}`,
+              `${depend.target}:${depend.type}`,
               (data) => this.handleDepend({
                 data,
                 field: field.name,
@@ -114,60 +104,53 @@ export default function FormStore(Comp) {
     /**
      * 通用事件回调，所有的事件都会最终走这里
      *
-     * @param {*} { eventTarget, eventType, data, option }
+     * @param {*} { target, type, data, option }
      */
-    handle({ eventTarget, eventType, data, option }) {
-      console.log('触发事件:', '目标：', eventTarget, '类型：', eventType, '数据', data)
-      switch (eventType) {
+    handle({ target, type, data, option }) {
+      console.log('触发事件:', '目标：', target, '类型：', type, '数据', data)
+      switch (type) {
         // 字段值改变
-        case 'changeValue':
+        case 'change':
           this.setState((state) => {
             return {
               formData: {
                 ...state.formData,
-                [eventTarget]: data
+                [target]: data
               }
             }
           }, () => {
             if (option.reset) {
+              // 对于需要远程加载数据的字段，本地调用即可
+              const currentField = getFieldByName(target, this.state.formConfig.fields);
+              const { remote } = currentField;
               // 触发重置事件
-              this.emitter.emit(`${eventTarget}:onResetValue`);
+              if (remote){
+                const { formData } = this.state;
+                const { formContext } = this.props;
+                const data = null;
+
+                FormAjax
+                  .getData({ formData, formContext, remote})
+                  .then((data) => {
+                    this.emitter.emit(`${target}:onreset`, data);
+                  })
+                  .catch(e => {
+                    console.error(e);
+                  })
+              } else {
+                this.emitter.emit(`${target}:onreset`);
+              }
             }
             // 触发等于值相等事件
-            this.emitter.emit(`${eventTarget}:equalValue:${data}`);
+            this.emitter.emit(`${target}:onchange:${data}`);
           });
           break;
         // 切换是否可见
         case 'toggleVisible':
           this.setState((state) => {
             state.formConfig.fields.forEach((field) => {
-              if (field.name === eventTarget) {
+              if (field.name === target) {
                 field.visible = option.visible
-              }
-            });
-            return state;
-          });
-          break;
-        // 切换是否必填
-        case 'toggleRequired':
-          this.setState((state) => {
-            state.formConfig.fields.forEach((field) => {
-              if (field.name === eventTarget) {
-                let rules = field.rules;
-                if (!Array.isArray(rules)) {
-                  rules = [];
-                }
-                let tag = false; // 是否有required配置
-                rules.forEach((rule) => {
-                  if (rule.required !== undefined) {
-                    tag = true;
-                    rule.required = option.required;
-                  }
-                });
-                if (!tag) {
-                  rules.push({ required: option.required, message: '请填写' })
-                }
-                field.rules = rules;
               }
             });
             return state;
@@ -177,7 +160,7 @@ export default function FormStore(Comp) {
         case 'toggleDisabled':
           this.setState((state) => {
             state.formConfig.fields.forEach((field) => {
-              if (field.name === eventTarget) {
+              if (field.name === target) {
                 field.disabled = option.disabled
               }
             });
@@ -191,41 +174,38 @@ export default function FormStore(Comp) {
     /**
      * 依赖回调，触发事件可被通用回调或字段对应名称回调方法捕获
      *
-     * @param {*} { field, handler, data }
+     * @param {*} { field, handler }
      * @memberof EmitterWrapper
      */
-    handleDepend({ field, handler, data }) {
-      const fieldCof = this.state.formConfig.fields.find(v => v.name === field);
-      const { defaultValue } = fieldCof;
+    handleDepend({ field, handler }) {
       const handlerParts = handler.split(':');
       const handlerName = handlerParts[0];
-      const handleParams = handlerParts.slice(1);
+      // const handleParams = handlerParts.slice(1);
       switch (handlerName) {
-        case 'resetValue':
-          this.emitter.emit(`${field}:changeValue`, defaultValue, { reset: true });
+        case 'reset':
+          this.emitter.emit(`${field}:change`, undefined, { reset: true });
           break;
-        case 'toggleVisible':
-          this.emitter.emit(`${field}:toggleVisible`, handleParams[0] == 1);
+        case 'show':
+        case 'hide':
+          this.emitter.emit(`${field}:toggleVisible`, handlerName === 'show');
           break;
-        case 'toggleDisabled':
-          this.emitter.emit(`${field}:toggleDisabled`, handleParams[0] == 1);
-          break;
-        case 'toggleRequired':
-          this.emitter.emit(`${field}:toggleRequired`, handleParams[0] == 1);
+        case 'disable':
+        case 'enable':
+          this.emitter.emit(`${field}:toggleDisabled`, handleParams == 'disable');
           break;
       }
     }
 
     render() {
-      const { formData, formConfig: { fields, groups } } = this.state;
+      const { formData, formConfig} = this.state;
+      const { formContext } = this.props;
       return <Comp
         onCreate={this.props.onCreate}
-        formStore={{
-          fields,
-          groups,
-          data: formData,
-          emitter: this.emitter
-        }} />;
+        emitter={this.emitter}
+        formConfig={formConfig}
+        formData={formData}
+        formContext={formContext}
+        />;
     }
   }
   return EmitterWrapper;
