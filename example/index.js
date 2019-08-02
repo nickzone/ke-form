@@ -6,6 +6,9 @@ const formConfig = {
   groups: [{ // 分组配置
     name: 'base',
     title: '基本信息'
+  },{
+      name: 'other',
+      title: '其他信息'
   }],
   style: {
     itemCol: {
@@ -21,11 +24,8 @@ const formConfig = {
   fields: [{ // 字段配置
     type: 'input', // 组件类型
     name: 'firstname', // 字段属性名
+    placeholder: "请输入",
     label: '姓氏', // 字段标签
-    self: {
-      size: 'large',
-      type: 'textarea'
-    },
     rules: [{ required: true, message: '请填写!' }], // 校验规则
     group: 'base' // 所属分组
   }, { // 字段配置
@@ -48,7 +48,7 @@ const formConfig = {
       url: 'http://xxxx?firstname=${firstname}&ucid=${context.ucid}',
       dependFields: ["firstname"]
     },
-    group: 'base' // 所属分组
+    group: 'other' // 所属分组
     }, { // 字段配置
       type: 'select', // 组件类型
       name: 'area', // 字段属性名
@@ -64,18 +64,19 @@ const formConfig = {
         url: 'http://xxxx?firstname=${city}&ucid=${context.ucid}',
         dependFields: ["city"]
       },
-      group: 'base' // 所属分组
+      group: 'other' // 所属分组
     }, { // 字段配置
       type: 'datepicker', // 组件类型
       name: 'datepicker', // 字段属性名
       label: '日期', // 字段标签
-      group: 'base' // 所属分组
+      placeholder: "请选择",
+      group: 'other' // 所属分组
     }, { // 字段配置
       type: 'checkbox', // 组件类型
       name: 'checkbox', // 字段属性名
       label: '性别', // 字段标签
       options: [{key: '1', value: '男'}, {key: '0', value: '女'}],
-      group: 'base' // 所属分组
+      group: 'other' // 所属分组
     }]
 };
 

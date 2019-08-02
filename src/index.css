@@ -1,0 +1,28 @@
+.ke-form {
+  padding: 16px;
+  padding-bottom: 0;
+}
+
+.ke-form>.ant-form::after {
+  content: '.';
+  clear: both;
+  height: 0;
+  visibility: hidden;
+  display: block;
+}
+
+.ke-form-item {
+
+}
+
+.ke-form-head {
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.ke-form-title {
+  font-weight: bold;
+  color: #666;
+  font-size: 14px;
+  font-weight: normal;
+}

@@ -13,11 +13,12 @@ export default class FieldDatePicker extends Component {
     return (
       <DatePicker
         {...self}
+        style={{width: '100%'}}
         disabled={disabled}
         placeholder={placeholder}
         value={value ? moment(value, 'YYYY-MM-DD'): null}
         format={'YYYY-MM-DD'}
-        onChange={(date, dateString) => onChange(dateString)} />
+        onChange={(date, dateString) => {onChange(dateString)} }/>
     )
   }
 }

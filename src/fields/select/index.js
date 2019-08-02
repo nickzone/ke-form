@@ -39,9 +39,9 @@ export default class FieldSelect extends Component {
     return (
       <Select
         {...self}
-        placeholder={placeholder}
+        placeholder={placeholder + 'dasdas'}
         disabled={disabled}
-        value={value}
+        value={value || undefined}
         onChange={onChange}>
         {this.renderOptions()}
       </Select>

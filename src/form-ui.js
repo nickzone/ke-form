@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Form, Col } from 'antd';
 import Field from './form-field';
 import FieldGroup from './form-group';
-import './index.less';
+import './index.css';
 
 class formUI extends Component {
   renderFields() {
@@ -68,7 +68,7 @@ class formUI extends Component {
 
   render() {
     return (
-      <div className="ke-formgroup">
+      <div className="ke-form">
         <Form>
           {this.renderFields()}
         </Form>

@@ -36,6 +36,7 @@ function getData({ formData, formContext, remote }) {
       }
       return formData[$1];
     });
+    
     ajax(parsedUrl)
       .then(data => {
         resolve(data);
