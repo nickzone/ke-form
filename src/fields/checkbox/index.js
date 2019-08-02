@@ -24,11 +24,12 @@ export default class FieldCheckbox extends Component {
   }
   
   render() {
-    const { disabled = false, name } = this.props.config;
+    const { disabled = false, name, self = {}} = this.props.config;
     const { value, onChange } = this.props;
 
     return (
       <CheckboxGroup
+        {...self}
         disabled={disabled}
         name={name}
         value={value}

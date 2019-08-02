@@ -22,6 +22,10 @@ const formConfig = {
     type: 'input', // 组件类型
     name: 'firstname', // 字段属性名
     label: '姓氏', // 字段标签
+    self: {
+      size: 'large',
+      type: 'textarea'
+    },
     rules: [{ required: true, message: '请填写!' }], // 校验规则
     group: 'base' // 所属分组
   }, { // 字段配置
