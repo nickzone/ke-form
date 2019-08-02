@@ -25,23 +25,27 @@ export default class FieldSelect extends Component {
   // 配置remote时返回远程数据
   onReset(data) {
     const { remote } = this.props.config;
-    if(data && remote) {
+    if(remote) {
       this.setState({
-        options: data
+        options: data || []
       })
     }
   }
 
   render() {
     const { disabled = false, placeholder } = this.props.config;
+    const { value, onChange } = this.props;
+
     return (
       <Select
         placeholder={placeholder}
         disabled={disabled}
-        value={this.props.value}
-        onChange={this.props.onChange}>
+        value={value}
+        onChange={onChange}>
         {this.renderOptions()}
       </Select>
     )
   }
 }
+
+FieldSelect.initialValue = "";

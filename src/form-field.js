@@ -1,16 +1,10 @@
 import React, { Component } from 'react'
 import { Form } from 'antd';
-import * as Fields from './fields';
 
 export default class FormField extends Component {
   constructor(props) {
     super(props);
     this.onReset = this.onReset.bind(this);
-  }
-
-  // 注册类型组件
-  static addField(name, component) {
-    FormField[name] = FormField[name] || component;
   }
 
   componentDidMount() {
@@ -46,7 +40,8 @@ export default class FormField extends Component {
         label={config.label} >
         {
           getFieldDecorator(config.name, {
-            rules: config.rules || []
+            rules: config.rules || [],
+            initialValue: FieldComp.initialValue || ''
           })(<FieldComp
             ref={this.bindRef.bind(this)}
             config={config}
@@ -74,6 +69,13 @@ export default class FormField extends Component {
   }
 }
 
-for (const item in Fields) {
-  FormField.addField(item, Fields[item])
+/**
+ * 注册字段
+ *
+ * @export
+ * @param {*} name 字段类型
+ * @param {*} component 字段组件
+ */
+export function addField(name, component) {
+  FormField[name] = FormField[name] || component;
 }

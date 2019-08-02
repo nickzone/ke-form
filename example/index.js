@@ -9,7 +9,7 @@ const formConfig = {
   }],
   style: {
     itemCol: {
-      span: 12
+      span: 6
     },
     labelCol: {
       span: 6
@@ -34,7 +34,7 @@ const formConfig = {
     name: 'city', // 字段属性名
     label: '城市', // 字段标签
     rules: [{ required: true, message: '请填写!' }], // 校验规则
-      placeholder: '当姓氏和名字都有值且姓氏发生改变时重置',
+    placeholder: '当姓氏发生改变时且值不为空重置',
     dependEvents: [{
       target: 'firstname',
       type: 'change',
@@ -42,10 +42,37 @@ const formConfig = {
     }],
     remote: {
       url: 'http://xxxx?firstname=${firstname}&ucid=${context.ucid}',
-      dependFields: ["lastname", "firstname"]
+      dependFields: ["firstname"]
     },
     group: 'base' // 所属分组
-  }]
+    }, { // 字段配置
+      type: 'select', // 组件类型
+      name: 'area', // 字段属性名
+      label: '区域', // 字段标签
+      rules: [{ required: true, message: '请填写!' }], // 校验规则
+      placeholder: '当城市改变时重置',
+      dependEvents: [{
+        target: 'city',
+        type: 'change',
+        handler: 'reset'
+      }],
+      remote: {
+        url: 'http://xxxx?firstname=${city}&ucid=${context.ucid}',
+        dependFields: ["city"]
+      },
+      group: 'base' // 所属分组
+    }, { // 字段配置
+      type: 'datepicker', // 组件类型
+      name: 'datepicker', // 字段属性名
+      label: '日期', // 字段标签
+      group: 'base' // 所属分组
+    }, { // 字段配置
+      type: 'checkbox', // 组件类型
+      name: 'checkbox', // 字段属性名
+      label: '性别', // 字段标签
+      options: [{key: '1', value: '男'}, {key: '0', value: '女'}],
+      group: 'base' // 所属分组
+    }]
 };
 
 // 表单初始值，可选
@@ -63,6 +90,12 @@ render(
     formConfig={formConfig}
     formData={formData}
     formContext={formContext}
-    onCreate={(form) => { window.__form = form }} // 表单创建后获取可交互实例
+    onCreate={setResult} // 表单创建后获取可交互实例
   />, document.querySelector('#app'));
+
+  function setResult(form){
+    window.__form = form; setInterval(() => {
+      document.querySelector('#result').innerHTML = JSON.stringify(form.getFieldsValue(), null, 4);
+    }, 500); 
+  }
 

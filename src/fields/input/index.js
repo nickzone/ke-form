@@ -4,13 +4,16 @@ import { Input } from 'antd';
 export default class FieldInput extends Component {
   render() {
     const { disabled = false, placeholder } = this.props.config;
+    const { value, onChange } = this.props;
 
     return (
       <Input
         disabled={disabled}
         placeholder={placeholder}
-        value={this.props.value}
-        onChange={this.props.onChange} />
+        value={value}
+        onChange={onChange} />
     )
   }
 }
+
+FieldInput.initialValue = "";

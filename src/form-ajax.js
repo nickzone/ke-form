@@ -12,8 +12,8 @@ let ajax = (url) => {
   console.log('发起remote请求：', url)
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve([{"key": "100001","value": "北京"}])
-    }, 2000);
+      resolve([{ "key": "100002", "value": "北京"} ,{"key": "100001","value": Math.random()}])
+    }, 300);
   })
 }
 

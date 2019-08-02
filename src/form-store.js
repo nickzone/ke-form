@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Emitter from 'component-emitter';
 import FormAjax from './form-ajax';
 import { getFieldByName } from './utils';
+import * as Fields from './fields';
 
 export default function FormStore(Comp) {
   class EmitterWrapper extends Component {
@@ -11,9 +12,11 @@ export default function FormStore(Comp) {
       this.emitter = new Emitter();
 
       this.state = {
-        formData: this.props.formData || {},
+        formData: this.normalizeFormData(),
         formConfig: this.props.formConfig || []
       };
+
+      this.normalizeFormData();
       
       // 遍历字段配置
       this.state.formConfig.fields.forEach((field) => {
@@ -22,6 +25,19 @@ export default function FormStore(Comp) {
         // 注册依赖回调
         this.bindDependHandle(field);
       });
+    }
+
+    // 规范化formData
+    normalizeFormData  = () => {
+      const normalLizedFormData = {};
+      const { formConfig, formData} = this.props;
+
+      formConfig.fields.forEach((field) => {
+        const { name, type} = field;
+        normalLizedFormData[name] = formData[name] || Fields[type].initialValue
+      });
+
+      return normalLizedFormData;
     }
 
     /**
@@ -180,10 +196,12 @@ export default function FormStore(Comp) {
     handleDepend({ field, handler }) {
       const handlerParts = handler.split(':');
       const handlerName = handlerParts[0];
+      const currentField = getFieldByName(field, this.state.formConfig.fields);
       // const handleParams = handlerParts.slice(1);
       switch (handlerName) {
         case 'reset':
-          this.emitter.emit(`${field}:change`, undefined, { reset: true });
+          this.emitter.emit(`${field}:change`, 
+            Fields[currentField.type].initialValue, { reset: true });
           break;
         case 'show':
         case 'hide':
