@@ -80,6 +80,17 @@ const formConfig = {
       label: '性别', // 字段标签
       options: [{key: '1', value: '男'}, {key: '0', value: '女'}],
       group: 'other' // 所属分组
+    }, { // 字段配置
+      type: 'radio', // 组件类型
+      name: 'radio', // 字段属性名
+      label: '分类', // 字段标签
+      options: [{ key: '1', value: '分类1' }, { key: '0', value: '分类2' }],
+      group: 'other' // 所属分组
+    }, { // 字段配置
+      type: 'switch', // 组件类型
+      name: 'switch', // 字段属性名
+      label: '启用', // 字段标签
+      group: 'other' // 所属分组
     }]
 };
 
