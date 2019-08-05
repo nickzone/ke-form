@@ -38,11 +38,11 @@ export default class FieldSelect extends Component {
 
     return (
       <Select
-        {...self}
         placeholder={placeholder + 'dasdas'}
         disabled={disabled}
         value={value || undefined}
-        onChange={onChange}>
+        onChange={onChange}
+        {...self}>
         {this.renderOptions()}
       </Select>
     )

@@ -8,11 +8,11 @@ export default class FieldInput extends Component {
 
     return (
       <Input
-        {...self}
         disabled={disabled}
         placeholder={placeholder}
         value={value}
-        onChange={onChange} />
+        onChange={onChange} 
+        {...self}/>
     )
   }
 }

@@ -6,9 +6,7 @@ export default class FieldCheckbox extends Component {
   constructor(props) {
     super(props);
     const { options = [] } = this.props.config;
-    this.state = {
-      options
-    }
+    this.state = { options };
   }
 
   renderOptions() {
@@ -29,11 +27,11 @@ export default class FieldCheckbox extends Component {
 
     return (
       <CheckboxGroup
-        {...self}
         disabled={disabled}
         name={name}
         value={value}
         onChange={onChange}
+        {...self}
       >{this.renderOptions()}</CheckboxGroup>
     )
   }

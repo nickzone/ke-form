@@ -9,16 +9,17 @@ export default class FieldDatePicker extends Component {
   render() {
     const { disabled = false, placeholder, self = {}} = this.props.config;
     const { value, onChange } = this.props;
+    const defaultFormat = 'YYYY-MM-DD';
 
     return (
       <DatePicker
-        {...self}
         style={{width: '100%'}}
         disabled={disabled}
         placeholder={placeholder}
-        value={value ? moment(value, 'YYYY-MM-DD'): null}
-        format={'YYYY-MM-DD'}
-        onChange={(date, dateString) => {onChange(dateString)} }/>
+        value={value ? moment(value, self.format || defaultFormat) : ""}
+        onChange={(date, dateString) => { onChange(dateString) }}
+        format={defaultFormat}
+        {...self}/>
     )
   }
 }
