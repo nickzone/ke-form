@@ -19,6 +19,8 @@ export default function FormStore(Comp) {
       };
 
       this.normalizeFormData();
+
+      this.setAjax();
       
       // 遍历字段配置
       this.state.formConfig.fields.forEach((field) => {
@@ -27,6 +29,14 @@ export default function FormStore(Comp) {
         // 注册依赖回调
         this.bindDependHandle(field);
       });
+    }
+
+    // set ajax
+    setAjax = () => {
+      const ajax = this.props.formConfig.ajax;
+      if (ajax) {
+        FormAjax.setAjax(ajax);
+      }
     }
 
     // 规范化formData

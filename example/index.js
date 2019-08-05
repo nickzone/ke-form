@@ -21,6 +21,10 @@ const formConfig = {
       span: 18
     }
   },
+  ajax: (url) => new Promise((resolve,reject) => {
+    console.log('获取远程数据',url)
+    resolve([{key: 1, value: '北京'}])
+  }),
   fields: [{ // 字段配置
     type: 'input', // 组件类型
     name: 'firstname', // 字段属性名

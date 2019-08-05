@@ -1,20 +1,13 @@
-import axios from 'axios'
-// let ajax = (url) => {
-//   return axios({
-//     method: 'get',
-//     url
-//   }).then(data => {
-//     return data;
-//   })
-// }
-
 let ajax = (url) => {
-  console.log('发起remote请求：', url)
+  console.error('[ke-form] A config of fromConfig.ajax is required to handle this request: ' , url);
+  
   return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve([{ "key": "100002", "value": "北京"} ,{"key": "100001","value": Math.random()}])
-    }, 300);
+    resolve(null);
   })
+}
+
+function setAjax(_ajax) {
+  ajax = _ajax;
 }
 
 function getData({ formData, formContext, remote }) {
@@ -48,4 +41,4 @@ function getData({ formData, formContext, remote }) {
   });
 }
 
-export default { getData }
+export default  { getData, setAjax }
