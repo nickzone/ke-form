@@ -58,7 +58,7 @@ const formConfig = {
       name: 'area', // 字段属性名
       label: '区域', // 字段标签
       rules: [{ required: true, message: '请填写!' }], // 校验规则
-      placeholder: '当城市改变时重置',
+      // placeholder: '当城市改变时重置',
       dependEvents: [{
         target: 'city',
         type: 'change',
@@ -73,7 +73,6 @@ const formConfig = {
       type: 'datepicker', // 组件类型
       name: 'datepicker', // 字段属性名
       label: '日期', // 字段标签
-      placeholder: "请选择",
       group: 'other' // 所属分组
     }, { // 字段配置
       type: 'checkbox', // 组件类型

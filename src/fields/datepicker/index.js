@@ -7,9 +7,10 @@ moment.locale('zh-cn');
 
 export default class FieldDatePicker extends Component {
   render() {
-    const { disabled = false, placeholder, self = {}} = this.props.config;
+    let { label, disabled = false, placeholder, self = {}} = this.props.config;
     const { value, onChange } = this.props;
     const defaultFormat = 'YYYY-MM-DD';
+    placeholder = placeholder || '请选择' + label;
 
     return (
       <DatePicker

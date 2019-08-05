@@ -3,8 +3,9 @@ import { Input } from 'antd';
 
 export default class FieldInput extends Component {
   render() {
-    const { disabled = false, placeholder, self = {} } = this.props.config;
+    let { label, disabled = false, placeholder, self = {} } = this.props.config;
     const { value, onChange } = this.props;
+    placeholder = placeholder || '请填写' + label;
 
     return (
       <Input

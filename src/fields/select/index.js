@@ -33,12 +33,13 @@ export default class FieldSelect extends Component {
   }
 
   render() {
-    const { disabled = false, placeholder, self = {} } = this.props.config;
+    let { label, disabled = false, placeholder, self = {} } = this.props.config;
     const { value, onChange } = this.props;
+    placeholder = placeholder || '请选择' + label;
 
     return (
       <Select
-        placeholder={placeholder + 'dasdas'}
+        placeholder={placeholder}
         disabled={disabled}
         value={value || undefined}
         onChange={onChange}

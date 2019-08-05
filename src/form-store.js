@@ -21,15 +21,10 @@ export default function FormStore(Comp) {
       this.normalizeFormData();
 
       this.setAjax();
-      
-      // 遍历字段配置
-      this.state.formConfig.fields.forEach((field) => {
-        // 注册通用回调
-        this.bindHandle(field);
-        // 注册依赖回调
-        this.bindDependHandle(field);
-      });
+
+      this.initEventHandle();
     }
+    
 
     // set ajax
     setAjax = () => {
@@ -50,6 +45,17 @@ export default function FormStore(Comp) {
       });
 
       return normalLizedFormData;
+    }
+
+    // bind event-handle
+    initEventHandle = () => {
+      // 遍历字段配置
+      this.state.formConfig.fields.forEach((field) => {
+        // 注册通用回调
+        this.bindHandle(field);
+        // 注册依赖回调
+        this.bindDependHandle(field);
+      });
     }
 
     /**
