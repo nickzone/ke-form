@@ -99,6 +99,13 @@ render(
   />, document.querySelector('#app'));
 
   function setResult(form){
+    form.onFieldsChange((changedFields, allFields) => {
+      console.log('onFieldsChange',changedFields, allFields);
+    });
+    form.onValuesChange((changedValues, allValues) => {
+      console.log('onValuesChange', changedValues, allValues);
+    });
+
     window.__form = form; setInterval(() => {
       document.querySelector('#result').innerHTML = JSON.stringify(form.getFieldsValue(), null, 4);
     }, 500); 

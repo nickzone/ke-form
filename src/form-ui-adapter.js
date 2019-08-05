@@ -14,13 +14,19 @@ export default function (formUI) {
       });
       return map;
     },
-    onValuesChange: (props, changedValue) => {
+    onValuesChange: (props, changedValue, allValues) => {
       const { emitter } = props;
-      const fields = Object.keys(changedValue);
       
-      fields.forEach((field)=>{
-        emitter.emit(`${field}:change`, changedValue[field]);
+      emitter.emit('onValuesChange', changedValue, allValues);
+    },
+    onFieldsChange: (props, changedFields, allFields) => {
+      const { emitter } = props;
+      const fields = Object.keys(changedFields);
+
+      fields.forEach((field) => {
+        emitter.emit(`${field}:change`, changedFields[field].value);
       });
+      emitter.emit('onFieldsChange', changedFields, allFields);
     }
   })(formUI);
 }

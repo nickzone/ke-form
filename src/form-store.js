@@ -11,6 +11,8 @@ export default function FormStore(Comp) {
 
       this.emitter = new Emitter();
 
+      this.formInstance = null; // form实例
+
       this.state = {
         formData: this.normalizeFormData(),
         formConfig: this.props.formConfig || []
@@ -123,7 +125,6 @@ export default function FormStore(Comp) {
      * @param {*} { target, type, data, option }
      */
     handle({ target, type, data, option }) {
-      console.log('触发事件:', '目标：', target, '类型：', type, '数据', data)
       switch (type) {
         // 字段值改变
         case 'change':
@@ -214,15 +215,116 @@ export default function FormStore(Comp) {
       }
     }
 
+    /**
+     * 返回表单实例
+     *
+     * @param {*} form
+     */
+    onCreate = (form) => {
+      const { onCreate } = this.props;
+
+      // 混入额外属性
+      this.mixInFieldEvent(form);
+      this.mixInVisibleSetter(form);
+      this.mixInDisabledSetter(form);
+      this.mixInRulesSetter(form);
+      this.formInstance = form;
+
+      onCreate(form);
+    }
+
+    /**
+     * mixin field listener
+     *
+     * @param {*} form
+     * @memberof EmitterWrapper
+     */
+    mixInFieldEvent(form) {
+      let { emitter } = this;
+
+      form.onValuesChange = (callback) => {
+        emitter.on('onValuesChange', callback);
+      }
+
+      form.onFieldsChange = (callback) => {
+        emitter.on('onFieldsChange', callback);
+      }
+    }
+
+    /**
+     * mixin field visible setter
+     *
+     * @param {*} form
+     * @memberof EmitterWrapper
+     */
+    mixInVisibleSetter(form) {
+      form.setFieldsVisible = this.toggleSetter('visible');
+    }
+
+    /**
+     * mixin field disabled setter
+     *
+     * @param {*} form
+     * @memberof EmitterWrapper
+     */
+    mixInDisabledSetter(form) {
+      form.setFieldsDisabled = this.toggleSetter('disabled');
+    }
+
+
+    /**
+     * mixin field rules setter
+     *
+     * @param {*} form
+     * @memberof EmitterWrapper
+     */
+    mixInRulesSetter(form) {
+      form.setFieldsRules = (fields => {
+        this.setState((state) => {
+          state.formConfig.fields.forEach((field) => {
+            const rules = fields[field.name]
+            if (rules) {
+              field.rules = typeof rules === 'function' ? rules(field.rules) : rules;
+            }
+          });
+          return state;
+        });
+      });
+    }
+
+    /**
+     * build toggle-setter method for formConfig
+     *
+     * @param {*} type
+     * @returns
+     * @memberof EmitterWrapper
+     */
+    toggleSetter(type) {
+      let { emitter } = this;
+
+      return (fields) => {
+        for (const field in fields) {
+          const { formConfig } = this.state;
+          const fieldConfig = getFieldByName(field, formConfig.fields);
+          let target = fields[field];
+          target = typeof target === 'function' ? target(fieldConfig[type]) : target;
+
+          const action = type[0].toUpperCase() + type.slice(1);
+          return emitter.emit(`${field}:toggle${action}`, target);
+        }
+      }
+    }
+
     render() {
       const { formData, formConfig} = this.state;
       const { formContext } = this.props;
       return <Comp
-        onCreate={this.props.onCreate}
+        onCreate={this.onCreate}
         emitter={this.emitter}
         formConfig={formConfig}
         formData={formData}
         formContext={formContext}
+        formInctance={this.formInstance}
         />;
     }
   }
