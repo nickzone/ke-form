@@ -11,8 +11,6 @@ export default function FormStore(Comp) {
 
       this.emitter = new Emitter();
 
-      this.formInstance = null; // form实例
-
       this.state = {
         formData: this.normalizeFormData(),
         formConfig: this.props.formConfig || []
@@ -244,8 +242,7 @@ export default function FormStore(Comp) {
       this.mixInVisibleSetter(form);
       this.mixInDisabledSetter(form);
       this.mixInRulesSetter(form);
-      this.formInstance = form;
-
+      
       onCreate(form);
     }
 
@@ -340,7 +337,6 @@ export default function FormStore(Comp) {
         formConfig={formConfig}
         formData={formData}
         formContext={formContext}
-        formInctance={this.formInstance}
         />;
     }
   }

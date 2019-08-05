@@ -1,9 +1,5 @@
 let ajax = (url) => {
   console.error('[ke-form] A config of fromConfig.ajax is required to handle this request: ' , url);
-  
-  return new Promise((resolve, reject) => {
-    resolve(null);
-  })
 }
 
 function setAjax(_ajax) {
