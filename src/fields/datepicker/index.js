@@ -16,7 +16,7 @@ export default class FieldDatePicker extends Component {
         style={{width: '100%'}}
         disabled={disabled}
         placeholder={placeholder}
-        value={value ? moment(value, self.format || defaultFormat) : ""}
+        value={value ? moment(value, self.format || defaultFormat) : null}
         onChange={(date, dateString) => { onChange(dateString) }}
         format={defaultFormat}
         {...self}/>
