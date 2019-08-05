@@ -237,12 +237,13 @@ export default function FormStore(Comp) {
     onCreate = (form) => {
       const { onCreate } = this.props;
 
-      // 混入额外属性
+      // mixin config setter && value-listener
       this.mixInFieldEvent(form);
+      this.mixInConfigSetter(form);
       this.mixInVisibleSetter(form);
       this.mixInDisabledSetter(form);
       this.mixInRulesSetter(form);
-      
+
       onCreate(form);
     }
 
@@ -265,13 +266,23 @@ export default function FormStore(Comp) {
     }
 
     /**
+     * mixin field setter
+     *
+     * @param {*} form
+     * @memberof EmitterWrapper
+     */
+    mixInConfigSetter(form) {
+      form.setFieldsConfig = this.makeConfigSetter();
+    }
+
+    /**
      * mixin field visible setter
      *
      * @param {*} form
      * @memberof EmitterWrapper
      */
     mixInVisibleSetter(form) {
-      form.setFieldsVisible = this.toggleSetter('visible');
+      form.setFieldsVisible = this.makeConfigPropSetter(form, 'visible');
     }
 
     /**
@@ -281,9 +292,8 @@ export default function FormStore(Comp) {
      * @memberof EmitterWrapper
      */
     mixInDisabledSetter(form) {
-      form.setFieldsDisabled = this.toggleSetter('disabled');
+      form.setFieldsDisabled = this.makeConfigPropSetter(form, 'disabled');
     }
-
 
     /**
      * mixin field rules setter
@@ -292,40 +302,49 @@ export default function FormStore(Comp) {
      * @memberof EmitterWrapper
      */
     mixInRulesSetter(form) {
-      form.setFieldsRules = (fields => {
+      form.setFieldsRules = this.makeConfigPropSetter(form, 'rules')
+    }
+    
+    /**
+     * field special prop config setter builder
+     *
+     * @param {*} form
+     * @param {*} prop
+     * @returns
+     * @memberof EmitterWrapper
+     */
+    makeConfigPropSetter(form, prop) {
+      return (fields) => {
+        for (const field in fields) {
+          fields[field] = {
+            [prop]: fields[field]
+          };
+        }
+        form.setFieldsConfig(fields);
+      };
+    }
+
+    /**
+     * field config-setter builder
+     *
+     * @returns
+     * @memberof EmitterWrapper
+     */
+    makeConfigSetter() {
+      return (fields => {
         this.setState((state) => {
           state.formConfig.fields.forEach((field) => {
-            const rules = fields[field.name]
-            if (rules) {
-              field.rules = typeof rules === 'function' ? rules(field.rules) : rules;
+            const newField = fields[field.name];
+            if (newField) {
+              for (const prop in newField) {
+                field[prop] = typeof newField[prop] === 'function' ?
+                  newField[prop](field[prop]) : newField[prop];
+              }
             }
           });
           return state;
         });
       });
-    }
-
-    /**
-     * build toggle-setter method for formConfig
-     *
-     * @param {*} type
-     * @returns
-     * @memberof EmitterWrapper
-     */
-    toggleSetter(type) {
-      let { emitter } = this;
-
-      return (fields) => {
-        for (const field in fields) {
-          const { formConfig } = this.state;
-          const fieldConfig = getFieldByName(field, formConfig.fields);
-          let target = fields[field];
-          target = typeof target === 'function' ? target(fieldConfig[type]) : target;
-
-          const action = type[0].toUpperCase() + type.slice(1);
-          return emitter.emit(`${field}:toggle${action}`, target);
-        }
-      }
     }
 
     render() {
