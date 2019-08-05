@@ -53,6 +53,8 @@ export default function FormStore(Comp) {
         this.bindHandle(field);
         // 注册依赖回调
         this.bindDependHandle(field);
+        // 初始化remote数据
+        this.initRemote(field);
       });
     }
 
@@ -158,7 +160,6 @@ export default function FormStore(Comp) {
               if (remote){
                 const { formData } = this.state;
                 const { formContext } = this.props;
-                const data = null;
 
                 FormAjax
                   .getData({ formData, formContext, remote})
@@ -226,6 +227,27 @@ export default function FormStore(Comp) {
         case 'enable':
           this.emitter.emit(`${field}:toggleDisabled`, handleParams == 'disable');
           break;
+      }
+    }
+
+    /**
+     * init remote data
+     *
+     * @param {*} field
+     */
+    initRemote = (field) => {
+      if (field.remote) {
+        const { formData } = this.state;
+        const { formContext } = this.props;
+
+        FormAjax
+          .getData({ formData, formContext, remote: field.remote })
+          .then((data) => {
+            this.emitter.emit(`${field.name}:onreset`, data);
+          })
+          .catch(e => {
+            console.error(e);
+          })
       }
     }
 
