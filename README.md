@@ -26,7 +26,7 @@ import React , { Component } from 'react';
 import { render } from 'react-dom';
 import KeForm from 'ke-form';
 
-// form config
+// 表单配置，包括字段、布局、分组等
 const formConfig = {
     fields: [{ // fields
         type: 'input',
@@ -35,35 +35,41 @@ const formConfig = {
     }]
 };
 
-// form initial value
+// 表单初始值
 const formData={
     firstname: 'tom'
 };
 
-// form data context
+// 表单上下文
 const formContext={ 
     ucid: '1000000000'
 };
 
 render(
     <KeForm
-        formConfig={formConfig}
-        formData={formData}
-        formContext={formContext}
-        onCreate={(form) => {console.log(form)}} // get the formInstance
+        formConfig={formConfig} // 表单配置，必传，生效一次
+        formData={formData} // 表单初始值，可选
+        formContext={formContext} // 表单上下文，可选
+        onCreate={(form) => {console.log(form)}} // 获取可交互表单实例，用于获取表单值，修改配置等
     />, document.body);
 ```
 
 ## 示例
 
-(codesandbox在线示例)[https://codesandbox.io/s/solitary-voice-kjusg]
-
+[codesandbox在线示例](https://codesandbox.io/s/solitary-voice-kjusg)
 
 ## API
 
-### props.formConfig
+### KeForm
 
-> `formConfig` 表单配置对象，用于初始化表单
+| 参数 | 说明 | 类型 | 默认值 |
+| ---- | ---- | ---- | ------ |
+| formConfig | 表单配置，包括字段、布局、分组等 | object | - |
+| formData | 表单初始值，{字段名: 字段值} map格式 | object | - |
+| formContext | 表单上下文，用于向表单传入额外的数据，可被表单部件，如字段部件访问 | object | - |
+| onCreate | 表单创建回调函数，用于和表单进行交互，比如获取表单值 | (form) => void | - |
+
+### formConfig
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
@@ -72,7 +78,7 @@ render(
 | fields | 表单字段，详见后文 | array | [] |
 | ajax | 数据加载函数，供内部组件需要获取数据依赖时调用 | (url) => promise.then(data) | - |
 
-> `formConfig.style` 表单布局配置对象
+### formConfig.style
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
@@ -80,7 +86,7 @@ render(
 | labelCol | 标签栅格布局，同 [Antd.Form](https://ant.design/components/form-cn/#API) | object | - |
 | wrapperCol | 表单元素栅格布局，同 [Antd.Form](https://ant.design/components/form-cn/#API) | object | - |
 
-> `formConfig.groups[i]` 表单分组配置对象
+### formConfig.groups[i]
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
@@ -88,12 +94,12 @@ render(
 | title | 分组标题 | string | '' |
 | style | 分组样式,继承并覆盖上文 `formConfig.style` 配置 | object | - |
 
-> `formConfig.fields[i]` 表单字段配置对象
+### formConfig.fields[i]
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
 | group | 分组key，当配置了分组时适用，表明字段所在分组 | string | - |
-| type | 字段类型，每种表单字段对应一种type | string | 'input' | 
+| type | 字段类型，每种表单字段对应一种type,详见下文 | string | 'input' | 
 | name | 字段键值 | string | - | 
 | label | 字段label | string | '' | 
 | visible | 字段是否可见 | boolean | true | 
@@ -110,58 +116,60 @@ render(
 | dependEvents[i].type | 所监听目标字段值值改变类型 | string: `change` (值改变) , `change:someValue` (等于特定值) | 'change' |
 | dependEvents[i].handler | 触发当前字段回调事件 | string: `reset` (重置) ,  `show / hide` (切换显示隐藏), `disable / enable` (切换可编辑) | 'reset' |
 
-> `formConfig.ajax` 配置内部组件加载数据用到的ajax函数,需适配如下语法:
-  
-```js
-formConfig.ajax(url).then(data); // data 是转化后的最终数据,这些数据会被内部组件应用
-```
-
-### 内置字段 API
+## 支持字段类型
 
 对于每种字段类型，除了支持上述公共 Api ,因为字段本身是基于 antd 表单组件实现的，所以能够支持相应属性，可通过 `self` 配置属性传入, 不要传入 `value` 和 `onChange` 等与表单值有关的属性，可能引起异常。
 
-> `input` 文本框
+### input 文本框
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
 | 无特殊配置 | - | - | - |
 
-> `select` 选择器
+### select 选择器
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
 | options | 选项 | array: [{key: value}] | - |
-| self | 可传入 (Antd.Input)[https://ant.design/components/input-cn/#Input] 原生属性 | -  | - |
+| self | 可传入 [Antd.Input](https://ant.design/components/input-cn/#Input) 原生属性 | object  | - |
 
-> `datepicker`  日期选择器
-
-| 参数 | 说明 | 类型 | 默认值 |
-| ---- | ---- | ---- | ------ |
-| self | 可传入 (Antd.DatePicker)[https://ant.design/components/date-picker-cn/#%E5%85%B1%E5%90%8C%E7%9A%84-API] 原生属性 | -  | - |
-
-> `checkbox` 多选框
+### datepicker  日期选择器
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
-| options | 选项 | array: [{key: value}] | - |
-| self | 可传入 (Antd.Checkbox.Group)[https://ant.design/components/checkbox-cn/#Checkbox-Group] 原生属性 | -  | - |
+| self | 可传入 [Antd.DatePicker](https://ant.design/components/date-picker-cn/#%E5%85%B1%E5%90%8C%E7%9A%84-API) 原生属性 | object | - |
 
-> `radio` 单选框
+### checkbox 多选框
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
 | options | 选项 | array: [{key: value}] | - |
-| self | 可传入 (Antd.Radio.Group)[https://ant.design/components/radio-cn/#RadioGroup] 原生属性 | -  | - |
+| self | 可传入 [Antd.Checkbox.Group](https://ant.design/components/checkbox-cn/#Checkbox-Group) 原生属性 | object  | - |
 
-> `switch` 开关
+### radio 单选框
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
-| self | 可传入 (Antd.Switch)[https://ant.design/components/switch-cn/#API] 原生属性 | -  | - |
+| options | 选项 | array: [{key: value}] | - |
+| self | 可传入 [Antd.Radio.Group](https://ant.design/components/radio-cn/#RadioGroup) 原生属性 | object  | - |
 
-### props.formData 表单初始值
+### switch 开关
 
-> 用于填写默认值, `{key:value}` 格式。
+| 参数 | 说明 | 类型 | 默认值 |
+| ---- | ---- | ---- | ------ |
+| self | 可传入 [Antd.Switch](https://ant.design/components/switch-cn/#API) 原生属性 | object  | - |
+
+### formConfig.ajax
+
+配置内部组件加载数据用到的ajax函数,需适配如下语法:
+  
+```js
+formConfig.ajax(url).then(data); // data 是转化后的最终数据,这些数据会被内部组件应用
+```
+
+### formData
+
+用于填写默认值, `{key:value}` 格式。
 
 ```js
 {
@@ -170,7 +178,7 @@ formConfig.ajax(url).then(data); // data 是转化后的最终数据,这些数�
 }
 ```
 
-### props.onCreate(form) 获取可交互表单实例
+### onCreate(form)
 
 > 原理：在底层实现上，回调参数 `form` 为 `antd` `Form.create` 方法创建表单得到的内部
   [this.props.form](https://ant.design/components/form-cn/#Form.create(options)) 对象，
@@ -184,7 +192,7 @@ formConfig.ajax(url).then(data); // data 是转化后的最终数据,这些数�
 | setFieldsDisabled | 修改字段的可编辑性 | ({fieldname: disabled:boolean `or` (current) => boolean})|
 | setFieldsRules | 修改字段的校验规则 | ({fieldname: rules:array `or` (current) => array}) |
 
-### props.formContext 
+### formContext 
 
 > 上下文数据对象，可被表单内部组件访问，比如一些字段需要远程数据，
   其配置的url属性能够通过 `http://${context.userid}` 的方式动态填充 `formContext.userid` 数据。
@@ -195,7 +203,7 @@ formConfig.ajax(url).then(data); // data 是转化后的最终数据,这些数�
 
 组件提供方法 `plugin('field','fieldType', Component)` 扩展字段，事实上内置字段也是通过该方法进行扩展的。
 
-扩展字段可访问组件内部的方法，并需要实现指定接口，比如内置input类型的实现如下：
+扩展字段可访问组件内部的方法，并需要实现指定接口，比如内置 `input` 类型的实现如下：
 
 ```js
 
@@ -206,7 +214,9 @@ import { Input } from 'antd';
 export default class FieldInput extends Component {
   render() {
 
-    // 能够获取当前字段配置对象 `this.props.config`，并需要实现 `{disabled, placeholder, value, onChange}` 属性
+    // 能够获取当前字段配置对象 `this.props.config`，并需要实现 
+    // `{disabled, placeholder, value, onChange}` 属性
+
     // 能够获取当前表单对象实例 `this.props.form` ，从而向上与整个表单互动
     // 能够获取当前表单上下文数据对象 `this.props.context`
     
@@ -231,9 +241,10 @@ import Keform , { plugin } from 'ke-form';
 import Input from 'input.js';
 
 // 注册input
-plugin('field', 'input', Input);
+plugin('field', 'input', Input);、
+
+// 在formConfig配置中即可引入该类型字段
+// {formConfig: {fields: [{type: input, name: 'fristname'}]}}
+
 // ===== /index.js ======
 
-// 在formConfig配置中即可引入该类型
-
-```
