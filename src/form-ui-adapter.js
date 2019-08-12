@@ -9,7 +9,7 @@ export default function (formUI) {
       // 如果字段无值，填入默认值
       fields.forEach((field)=> {
         map[field.name] = Form.createFormField({
-          value: formData[field.name] || Fields[field.type].initialValue
+          value: formData[field.name] || (Fields[field.type] &&  Fields[field.type].initialValue)
         })
       });
       return map;

@@ -9,10 +9,12 @@ class formUI extends Component {
     const { formConfig } = this.props;
     const { fields, groups, style = {} } = formConfig;
 
+    // 不需要分组，直接渲染
     if (!groups) {
       return this.renderArea(fields, style);
     }
 
+    // 否则，需要渲染分组
     return groups.map((group) => {
       const currentFields = fields.filter((item) =>
         item.group == group.name && item.visible !== false

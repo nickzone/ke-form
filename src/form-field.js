@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import { Form } from 'antd';
+import { log } from './utils';
+
+export const DEFAULT_TYPE = 'input';
 
 export default class FormField extends Component {
   constructor(props) {
@@ -9,7 +12,7 @@ export default class FormField extends Component {
 
   componentDidMount() {
     const { config, emitter } = this.props;
-    // 绑定 resetOption 事件回调
+    // 如果字段实现了onReset接口，则需要注册onreset回调
     if (this.fieldRef.onReset) {
       emitter.on(`${config.name}:onreset`, this.onReset)
     }
@@ -27,12 +30,13 @@ export default class FormField extends Component {
     const { config, form, labelCol, wrapperCol } = this.props;
     const { getFieldDecorator } = form;
     const type = config.type;
-    const FieldComp = FormField[type] || null;
+    let FieldComp = FormField[type];
 
     if (!FieldComp) {
-      return null;
+      log('error', `The type '${type}' of field ${config.label} is uninstalled, render as input instead.`);
+      FieldComp = FormField[DEFAULT_TYPE];
     }
-
+    
     return (
       <Form.Item
         labelCol={labelCol}

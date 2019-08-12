@@ -3,6 +3,7 @@ import Emitter from 'component-emitter';
 import FormAjax from './form-ajax';
 import { getFieldByName } from './utils';
 import * as Fields from './fields';
+import { DEFAULT_TYPE } from './form-field';
 
 export default function FormStore(Comp) {
   class EmitterWrapper extends Component {
@@ -22,7 +23,7 @@ export default function FormStore(Comp) {
 
       this.initEventHandle();
     }
-    
+
 
     // set ajax
     setAjax = () => {
@@ -33,13 +34,14 @@ export default function FormStore(Comp) {
     }
 
     // 规范化formData
-    normalizeFormData  = () => {
+    normalizeFormData = () => {
       const normalLizedFormData = {};
-      const { formConfig, formData} = this.props;
+      const { formConfig, formData } = this.props;
 
       formConfig.fields.forEach((field) => {
-        const { name, type} = field;
-        normalLizedFormData[name] = formData[name] || Fields[type].initialValue
+        const { name, type = DEFAULT_TYPE } = field;
+        const initialValue = Fields[type] && Fields[type].initialValue;
+        normalLizedFormData[name] = (formData && formData[name]) || initialValue;
       });
 
       return normalLizedFormData;
@@ -157,12 +159,12 @@ export default function FormStore(Comp) {
               const currentField = getFieldByName(target, this.state.formConfig.fields);
               const { remote } = currentField;
               // 触发重置事件
-              if (remote){
+              if (remote) {
                 const { formData } = this.state;
                 const { formContext } = this.props;
 
                 FormAjax
-                  .getData({ formData, formContext, remote})
+                  .getData({ formData, formContext, remote })
                   .then((data) => {
                     this.emitter.emit(`${target}:onreset`, data);
                   })
@@ -216,7 +218,7 @@ export default function FormStore(Comp) {
       // const handleParams = handlerParts.slice(1);
       switch (handlerName) {
         case 'reset':
-          this.emitter.emit(`${field}:change`, 
+          this.emitter.emit(`${field}:change`,
             Fields[currentField.type].initialValue, { reset: true });
           break;
         case 'show':
@@ -326,7 +328,7 @@ export default function FormStore(Comp) {
     mixInRulesSetter(form) {
       form.setFieldsRules = this.makeConfigPropSetter(form, 'rules')
     }
-    
+
     /**
      * field special prop config setter builder
      *
@@ -353,24 +355,31 @@ export default function FormStore(Comp) {
      * @memberof EmitterWrapper
      */
     makeConfigSetter() {
+      // 不可改属性配置
+      const immutableProps = ['type', 'name', 'remote','dependEvents'];
+
       return (fields => {
         this.setState((state) => {
           state.formConfig.fields.forEach((field) => {
             const newField = fields[field.name];
+
             if (newField) {
               for (const prop in newField) {
-                field[prop] = typeof newField[prop] === 'function' ?
-                  newField[prop](field[prop]) : newField[prop];
+                if (immutableProps.indexOf(prop) === -1) {
+                  field[prop] = typeof newField[prop] === 'function' ?
+                    newField[prop](field[prop]) : newField[prop];
+                }
               }
             }
           });
+
           return state;
         });
       });
     }
 
     render() {
-      const { formData, formConfig} = this.state;
+      const { formData, formConfig } = this.state;
       const { formContext } = this.props;
       return <Comp
         onCreate={this.onCreate}
@@ -378,7 +387,7 @@ export default function FormStore(Comp) {
         formConfig={formConfig}
         formData={formData}
         formContext={formContext}
-        />;
+      />;
     }
   }
   return EmitterWrapper;

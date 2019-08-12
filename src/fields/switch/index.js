@@ -5,7 +5,7 @@ export default class FieldSwitch extends Component {
   render() {
     let { label, disabled = false, placeholder, self = {} } = this.props.config;
     const { value, onChange } = this.props;
-    placeholder = placeholder || '请填写' + label;
+    placeholder = placeholder || '请输入' + label;
 
     return (
       <Switch

@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import { Input } from 'antd';
 
-export default class FieldInput extends Component {
+const { TextArea } = Input;
+
+export default class FieldTextArea extends Component {
   render() {
     let { label, disabled = false, placeholder, self = {} } = this.props.config;
     const { value, onChange } = this.props;
     placeholder = placeholder || '请输入' + label;
 
     return (
-      <Input
+      <TextArea
         disabled={disabled}
         placeholder={placeholder}
         value={value}
@@ -18,4 +20,4 @@ export default class FieldInput extends Component {
   }
 }
 
-FieldInput.initialValue = "";
+FieldTextArea.initialValue = "";
