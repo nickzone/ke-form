@@ -12,6 +12,8 @@ export default function FormStore(Comp) {
 
       this.emitter = new Emitter();
 
+      this.form = null;
+
       this.state = {
         formData: this.normalizeFormData(),
         formConfig: this.props.formConfig || []
@@ -39,8 +41,8 @@ export default function FormStore(Comp) {
       const { formConfig, formData } = this.props;
 
       formConfig.fields.forEach((field) => {
-        const { name, type = DEFAULT_TYPE } = field;
-        const initialValue = Fields[type] && Fields[type].initialValue;
+        const { name, type } = field;
+        const initialValue = (Fields[type] || Fields[DEFAULT_TYPE]).initialValue;
         normalLizedFormData[name] = (formData && formData[name]) || initialValue;
       });
 
@@ -78,14 +80,6 @@ export default function FormStore(Comp) {
           }
         })
       );
-      // 注册 reset 回调
-      this.emitter.on(
-        `${field.name}:reset`,
-        () => this.handle({
-          target: field.name,
-          type: 'reset'
-        })
-      );
       // 注册 toggleVisible 回调
       this.emitter.on(
         `${field.name}:toggleVisible`,
@@ -117,6 +111,9 @@ export default function FormStore(Comp) {
      * @param {*} field 当前字段配置
      */
     bindDependHandle(field) {
+      const DEFAULT_EVENT_TYPE = "change";
+      const DEFAULT_EVENT_HANDLE = "reset";
+
       if (field.dependEvents) {
         // 遍历依赖,注册依赖关系
         field.dependEvents.forEach((depend) => {
@@ -125,11 +122,11 @@ export default function FormStore(Comp) {
 
           handler.forEach((item) => {
             this.emitter.on(
-              `${depend.target}:${depend.type}`,
+              `${depend.target}:${depend.type || DEFAULT_EVENT_TYPE}`,
               (data) => this.handleDepend({
                 data,
                 field: field.name,
-                handler: item
+                handler: item || DEFAULT_EVENT_HANDLE
               })
             );
           });
@@ -176,7 +173,8 @@ export default function FormStore(Comp) {
               }
             }
             // 触发等于值相等事件
-            this.emitter.emit(`${target}:onchange:${data}`);
+            const value = typeof data === 'string' ? data : JSON.stringify(data);
+            this.emitter.emit(`${target}:change:${value}`);
           });
           break;
         // 切换是否可见
@@ -212,14 +210,24 @@ export default function FormStore(Comp) {
      * @memberof EmitterWrapper
      */
     handleDepend({ field, handler }) {
-      const handlerParts = handler.split(':');
-      const handlerName = handlerParts[0];
+      const splitIndex = handler.indexOf(':');
+      let handlerName = handler;
+      let handlerValue = undefined;
+
+      if (splitIndex > -1) {
+        handlerName = handle.slice(0, splitIndex);
+        handlerValue = handle.slice(splitIndex);
+      }
+
       const currentField = getFieldByName(field, this.state.formConfig.fields);
-      // const handleParams = handlerParts.slice(1);
+
       switch (handlerName) {
         case 'reset':
-          this.emitter.emit(`${field}:change`,
-            Fields[currentField.type].initialValue, { reset: true });
+          let value = (Fields[currentField.type] || Fields[DEFAULT_TYPE]).initialValue;
+          if (handlerValue) {
+            value = JSON.parse(handlerValue);
+          }
+          this.emitter.emit(`${field}:change`, value, { reset: true });
           break;
         case 'show':
         case 'hide':
@@ -259,6 +267,7 @@ export default function FormStore(Comp) {
      * @param {*} form
      */
     onCreate = (form) => {
+      this.form = form;
       const { onCreate } = this.props;
 
       // mixin config setter && value-listener
@@ -356,7 +365,7 @@ export default function FormStore(Comp) {
      */
     makeConfigSetter() {
       // 不可改属性配置
-      const immutableProps = ['type', 'name', 'remote','dependEvents'];
+      const immutableProps = ['type', 'name', 'remote', 'dependEvents'];
 
       return (fields => {
         this.setState((state) => {

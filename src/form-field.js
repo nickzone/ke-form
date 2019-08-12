@@ -33,7 +33,9 @@ export default class FormField extends Component {
     let FieldComp = FormField[type];
 
     if (!FieldComp) {
-      log('error', `The type '${type}' of field ${config.label} is uninstalled, render as input instead.`);
+      if(type) {
+        log('error', `The type '${type}' of field ${config.label} is uninstalled, render as input instead.`);
+      }
       FieldComp = FormField[DEFAULT_TYPE];
     }
     
