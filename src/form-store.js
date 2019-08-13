@@ -80,6 +80,15 @@ export default function FormStore(Comp) {
           }
         })
       );
+      // 注册 reset 回调
+      this.emitter.on(
+        `${field.name}:reset`,
+        (data) => this.handle({
+          target: field.name,
+          type: 'reset',
+          data
+        })
+      );
       // 注册 toggleVisible 回调
       this.emitter.on(
         `${field.name}:toggleVisible`,
@@ -141,7 +150,6 @@ export default function FormStore(Comp) {
      */
     handle({ target, type, data, option }) {
       switch (type) {
-        // 字段值改变
         case 'change':
           this.setState((state) => {
             return {
@@ -150,34 +158,30 @@ export default function FormStore(Comp) {
                 [target]: data
               }
             }
-          }, () => {
-            if (option.reset) {
-              // 对于需要远程加载数据的字段，本地调用即可
-              const currentField = getFieldByName(target, this.state.formConfig.fields);
-              const { remote } = currentField;
-              // 触发重置事件
-              if (remote) {
-                const { formData } = this.state;
-                const { formContext } = this.props;
-
-                FormAjax
-                  .getData({ formData, formContext, remote })
-                  .then((data) => {
-                    this.emitter.emit(`${target}:onreset`, data);
-                  })
-                  .catch(e => {
-                    console.error(e);
-                  })
-              } else {
-                this.emitter.emit(`${target}:onreset`);
-              }
-            }
-            // 触发等于值相等事件
-            const value = typeof data === 'string' ? data : JSON.stringify(data);
-            this.emitter.emit(`${target}:change:${value}`);
           });
           break;
-        // 切换是否可见
+
+        case 'reset':
+          const currentField = getFieldByName(target, this.state.formConfig.fields);
+          const { remote } = currentField;
+
+          if (remote) {
+            const { formData } = this.state;
+            const { formContext } = this.props;
+
+            FormAjax
+              .getData({ formData, formContext, remote })
+              .then((data) => {
+                this.emitter.emit(`${target}:onreset`, data);
+              })
+              .catch(e => {
+                console.error(e);
+              })
+          } else {
+            this.emitter.emit(`${target}:onreset`);
+          }
+          break;
+
         case 'toggleVisible':
           this.setState((state) => {
             state.formConfig.fields.forEach((field) => {
@@ -188,7 +192,7 @@ export default function FormStore(Comp) {
             return state;
           });
           break;
-        // 切换是否可编辑
+
         case 'toggleDisabled':
           this.setState((state) => {
             state.formConfig.fields.forEach((field) => {
@@ -201,7 +205,6 @@ export default function FormStore(Comp) {
           break;
       }
     }
-
 
     /**
      * 依赖回调，触发事件可被通用回调或字段对应名称回调方法捕获
@@ -227,12 +230,20 @@ export default function FormStore(Comp) {
           if (handlerValue) {
             value = JSON.parse(handlerValue);
           }
-          this.emitter.emit(`${field}:change`, value, { reset: true });
+
+          this.form.setFieldsValue({
+            [field]: value
+          },() => {
+            this.emitter.emit(`${field}:reset`, value);
+          });
+
           break;
+
         case 'show':
         case 'hide':
           this.emitter.emit(`${field}:toggleVisible`, handlerName === 'show');
           break;
+
         case 'disable':
         case 'enable':
           this.emitter.emit(`${field}:toggleDisabled`, handleParams == 'disable');

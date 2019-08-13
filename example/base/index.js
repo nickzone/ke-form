@@ -1,33 +1,41 @@
 import React, { Component } from 'react'
 import KeForm from '../../src';
 
-//表单配置
 const formConfig = {
-  // 字段配置
   fields: [{
-    label: '输入框',
-    name: 'input'
-  }, {
-    label: '输入框2',
-    name: 'input2',
-    dependEvents: [{
-      target: 'input',
-      type: 'change:2'
-    }]
+    label: '姓名',
+    name: 'firstname'
   }]
 };
 
 export default class extends Component {
+  state = {
+    formData: {}
+  }
+
+  onsubmit = () => {
+    console.log(this.form.getFieldsValue())
+  }
+
+  onCreate = (form) => {
+    this.form = form;
+    form.onValuesChange((changedValues, allValues) => {
+      console.log('changedValues', changedValues, 'allValues', allValues)
+    })
+  }
+
   render() {
     return (
-      <KeForm
-        formConfig={formConfig}
-        onCreate={(form) => {
-          form.onValuesChange((changedValues, allValues) => {
-            console.log('changedValues', changedValues, 'allValues', allValues)
-          })
-        }}
-      />
+      <div className="form-container">
+        <div className="form-header">基本使用</div>
+        <KeForm
+          formConfig={formConfig}
+          onCreate={this.onCreate}
+        />
+        <div className="form-submit-btn" onClick={this.onsubmit}>
+          提交
+        </div>
+      </div>
     )
   }
 }

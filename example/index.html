@@ -5,11 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>ke-form 一个配置化分组表单</title>
+  <style> 
+    .form-container {
+      margin: 20px;
+      border: 1px solid #eee;
+    }
+    .form-container::after{
+      content: '.';
+      visibility: hidden;
+      height: 0;
+      clear: both;
+      display: block;
+    }
+    .form-header {
+      border-bottom: 1px solid #eee;
+      padding: 16px;
+    }
+    .form-submit-btn {
+      line-height: 2;
+      background: #333;
+      padding: 0 1em;
+      margin-right: 16px;
+      border-radius: 4px;
+      color: #fff;
+      float: right;
+      margin-bottom: 16px;
+    }
+  </style>
 </head>
 <body>
   <div id="app"></div>
-      当前表单值：
-  <pre id="result">
-  </pre>
 </body>
 </html>
