@@ -4,7 +4,8 @@ import KeForm from '../../src';
 const formConfig = {
   fields: [{
     label: '姓名',
-    name: 'firstname'
+    name: 'firstname',
+    rules: [{ required: true }, { max: 3}]
   }]
 };
 
@@ -15,6 +16,10 @@ export default class extends Component {
 
   onsubmit = () => {
     console.log(this.form.getFieldsValue())
+  }
+
+  validateFieldsAndScroll = () => {
+    this.form.validateFieldsAndScroll()
   }
 
   onCreate = (form) => {
@@ -34,6 +39,9 @@ export default class extends Component {
         />
         <div className="form-submit-btn" onClick={this.onsubmit}>
           提交
+        </div>
+        <div className="form-submit-btn" onClick={this.validateFieldsAndScroll}>
+          验证
         </div>
       </div>
     )

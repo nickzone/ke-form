@@ -19,8 +19,6 @@ export default function FormStore(Comp) {
         formConfig: this.props.formConfig || []
       };
 
-      this.normalizeFormData();
-
       this.setAjax();
 
       this.initEventHandle();

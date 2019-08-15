@@ -3,6 +3,7 @@ import * as Fields from './fields';
 import { DEFAULT_TYPE } from './form-field';
 
 export default function (formUI) {
+  const fieldStateMap = {};
   return Form.create({
     mapPropsToFields: (props) => {
       const { formConfig: { fields }, formData } = props;
@@ -18,7 +19,10 @@ export default function (formUI) {
           value = Fields[field.type].initialValue
         }
 
-        map[field.name] = Form.createFormField({ value })
+        map[field.name] = Form.createFormField({ 
+          ...(fieldStateMap[field.name] || {}),
+          value
+        })
       });
 
       return map;
@@ -34,7 +38,9 @@ export default function (formUI) {
 
       fields.forEach((field) => {
         emitter.emit(`${field}:change`, changedFields[field].value);
+        fieldStateMap[field] = { ...changedFields[field], value: undefined }
       });
+      
       emitter.emit('onFieldsChange', changedFields, allFields);
     }
   })(formUI);
