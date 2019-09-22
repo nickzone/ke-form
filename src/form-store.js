@@ -170,6 +170,11 @@ export default function FormStore(Comp) {
             FormAjax
               .getData({ formData, formContext, remote })
               .then((data) => {
+                this.form.setFieldsConfig({
+                  [target]: {
+                    options: data
+                  }
+                });
                 this.emitter.emit(`${target}:onreset`, data);
               })
               .catch(e => {

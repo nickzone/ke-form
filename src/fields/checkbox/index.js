@@ -3,26 +3,8 @@ import { Checkbox } from 'antd';
 const CheckboxGroup = Checkbox.Group;
 
 export default class FieldCheckbox extends Component {
-  constructor(props) {
-    super(props);
-    const { options = [] } = this.props.config;
-    this.state = { options };
-  }
-
-  renderOptions() {
-    const { options } = this.state;
-
-    return options.map((option) => {
-      return (
-        <Checkbox key={option.key} value={option.key}>
-          {option.value}
-        </Checkbox>
-      );
-    });
-  }
-  
   render() {
-    const { disabled = false, name, self = {}} = this.props.config;
+    const { disabled = false, name, self = {}, options} = this.props.config;
     const { value, onChange } = this.props;
 
     return (
@@ -32,7 +14,15 @@ export default class FieldCheckbox extends Component {
         value={value}
         onChange={onChange}
         {...self}
-      >{this.renderOptions()}</CheckboxGroup>
+      >{
+          options.map((option) => {
+            return (
+              <Checkbox key={option.key} value={option.key}>
+                {option.value}
+              </Checkbox>
+            );
+          })
+      }</CheckboxGroup>
     )
   }
 }

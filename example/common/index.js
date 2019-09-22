@@ -7,10 +7,14 @@ const formConfig = {
     label: '姓氏',
     name: 'firstname'
   }, {
+    type: 'text',
+    label: '文本',
+    name: 'text'
+  }, {
     type: 'input',
     label: "名称",
     name: 'lastname',
-    dependEvents:[{
+    dependEvents: [{
       target: 'firstname'
     }]
   }, {
