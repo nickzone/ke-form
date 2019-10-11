@@ -4,12 +4,15 @@ import FormAjax from './form-ajax';
 import { getFieldByName } from './utils';
 import * as Fields from './fields';
 import { DEFAULT_TYPE } from './form-field';
+import FormUI from './form-ui'; // ui
+import FormUIAdapter from './form-ui-adapter'; // ui适配器
 
 export default function FormStore(Comp) {
   class EmitterWrapper extends Component {
     constructor(props) {
       super(props);
 
+      this.formCompInstance = FormUIAdapter(FormUI);
       this.emitter = new Emitter();
 
       this.form = null;
@@ -404,7 +407,8 @@ export default function FormStore(Comp) {
     render() {
       const { formData, formConfig } = this.state;
       const { formContext } = this.props;
-      return <Comp
+      FormUIAdapter(FormUI)
+      return <this.formCompInstance
         onCreate={this.onCreate}
         emitter={this.emitter}
         formConfig={formConfig}

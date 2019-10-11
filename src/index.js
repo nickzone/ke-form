@@ -1,10 +1,8 @@
 import FormStore from './form-store'; // 业务容器
-import FormUI from './form-ui'; // ui
-import FormUIAdapter from './form-ui-adapter'; // ui适配器
 import { addField } from './form-field';
 import * as Fields from './fields';
 
-const WrapperedForm = FormStore(FormUIAdapter(FormUI));
+const WrapperedForm = FormStore();
 
 // 注册内置字段
 for (const item in Fields) {

@@ -2,6 +2,19 @@ import React, { Component } from 'react'
 import KeForm from '../../src';
 
 const formConfig = {
+  style: {
+    sm: {
+      itemCol: {
+        span: 8
+      },
+      labelCol: {
+        span: 8
+      },
+      wrapperCol: {
+        span: 16
+      }
+    }
+  },
   fields: [{
     type: 'input',
     label: '姓氏',

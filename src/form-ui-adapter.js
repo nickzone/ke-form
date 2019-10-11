@@ -3,7 +3,7 @@ import * as Fields from './fields';
 import { DEFAULT_TYPE } from './form-field';
 
 export default function (formUI) {
-  const fieldStateMap = {};
+  const fieldStateMap = {}; // 缓存表单数据
   return Form.create({
     mapPropsToFields: (props) => {
       const { formConfig: { fields }, formData } = props;
@@ -36,12 +36,12 @@ export default function (formUI) {
       const { emitter } = props;
       const fields = Object.keys(changedFields);
 
+      emitter.emit('onFieldsChange', changedFields, allFields);
+      
       fields.forEach((field) => {
         emitter.emit(`${field}:change`, changedFields[field].value);
         fieldStateMap[field] = { ...changedFields[field], value: undefined }
       });
-      
-      emitter.emit('onFieldsChange', changedFields, allFields);
     }
   })(formUI);
 }
