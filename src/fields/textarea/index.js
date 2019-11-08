@@ -5,17 +5,24 @@ const { TextArea } = Input;
 
 export default class FieldTextArea extends Component {
   render() {
-    let { label, disabled = false, placeholder, self = {} } = this.props.config;
-    const { value, onChange } = this.props;
+    let {
+      value,
+      onChange,
+      config: { label, disabled, placeholder, props }
+    } = this.props;
+
     placeholder = placeholder || '请输入' + label;
 
+    const _props = {
+      disabled,
+      placeholder,
+      value,
+      onChange,
+      ...props
+    }
+
     return (
-      <TextArea
-        disabled={disabled}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange} 
-        {...self}/>
+      <TextArea {..._props}/>
     )
   }
 }

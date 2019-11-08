@@ -3,17 +3,21 @@ import { Switch } from 'antd';
 
 export default class FieldSwitch extends Component {
   render() {
-    let { label, disabled = false, placeholder, self = {} } = this.props.config;
-    const { value, onChange } = this.props;
-    placeholder = placeholder || '请输入' + label;
+    let {
+      value,
+      onChange,
+      config: { disabled, props }
+    } = this.props;
+
+    const _props = {
+      disabled,
+      value,
+      onChange,
+      ...props
+    }
 
     return (
-      <Switch
-        disabled={disabled}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        {...self} />
+      <Switch {..._props} />
     )
   }
 }

@@ -11,19 +11,14 @@ export default function FormStore(Comp) {
   class EmitterWrapper extends Component {
     constructor(props) {
       super(props);
-
-      this.formCompInstance = FormUIAdapter(FormUI);
-      this.emitter = new Emitter();
-
-      this.form = null;
-
+      this.formCompInstance = FormUIAdapter(FormUI); // 初始化表单实例
+      this.emitter = new Emitter(); // 初始化事件管理对象
+      this.form = null; // 可交互form实例
       this.state = {
-        formData: this.normalizeFormData(),
-        formConfig: this.props.formConfig || []
+        formData: this.normalizeFormData(), // 表单显示
+        formConfig: this.normalizeFormConfig() // 表单配置
       };
-
       this.setAjax();
-
       this.initEventHandle();
     }
 
@@ -34,6 +29,16 @@ export default function FormStore(Comp) {
       if (ajax) {
         FormAjax.setAjax(ajax);
       }
+    }
+
+    // 规范化配置
+    normalizeFormConfig = () => {
+      const { formConfig } = this.props;
+      formConfig.fields.forEach((field) => {
+        field.props = field.props || field.self || {};
+        field.disabled = !! field.disabled;
+      });
+      return formConfig;
     }
 
     // 规范化formData

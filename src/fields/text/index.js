@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 
 export default class FieldText extends Component {
+  
   render() {
-    const { value } = this.props;
+    let {
+      value,
+      placeholder,
+    } = this.props;
 
     return (
-      <span>{value || "--"}</span>
+      <span>{value || placeholder || "--"}</span>
     )
   }
 }

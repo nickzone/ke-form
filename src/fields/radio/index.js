@@ -4,17 +4,22 @@ const RadioGroup = Radio.Group;
 
 export default class FieldRadio extends Component {
   render() {
-    const { disabled = false, name, self = {}, options } = this.props.config;
-    const { value, onChange } = this.props;
+    let {
+      value,
+      onChange,
+      config: { disabled, props, options, name }
+    } = this.props;
+
+    const _props = {
+      disabled,
+      value,
+      onChange,
+      name,
+      ...props
+    }
 
     return (
-      <RadioGroup
-        disabled={disabled}
-        name={name}
-        value={value}
-        onChange={onChange}
-        {...self}
-      >{options.map((option) => {
+      <RadioGroup {..._props} >{options.map((option) => {
         return (
           <Radio key={option.key} value={option.key}>
             {option.value}

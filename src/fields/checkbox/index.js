@@ -4,17 +4,22 @@ const CheckboxGroup = Checkbox.Group;
 
 export default class FieldCheckbox extends Component {
   render() {
-    const { disabled = false, name, self = {}, options} = this.props.config;
-    const { value, onChange } = this.props;
+    let {
+      value,
+      onChange,
+      config: { disabled, props, options, name }
+    } = this.props;
+ 
+    const _props = {
+      disabled,
+      name,
+      value,
+      onChange,
+      ...props
+    }
 
     return (
-      <CheckboxGroup
-        disabled={disabled}
-        name={name}
-        value={value}
-        onChange={onChange}
-        {...self}
-      >{
+      <CheckboxGroup {..._props}>{
           options.map((option) => {
             return (
               <Checkbox key={option.key} value={option.key}>

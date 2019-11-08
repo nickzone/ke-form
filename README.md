@@ -120,44 +120,56 @@ render(
 
 对于每种字段类型，除了支持上述公共 Api ,因为字段本身是基于 antd 表单组件实现的，所以能够支持相应属性，需通过 `self` 配置属性传入, 不要传入 `value` 和 `onChange` 等与表单值有关的属性，会引起状态管理异常。
 
+### text 纯文本
+
+| 参数 | 说明 | 类型 | 默认值 |
+| ---- | ---- | ---- | ------ |
+| props | - | object  | - |
+
 ### input 文本框
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
-| self | 可传入 [Antd.Input](https://ant.design/components/input-cn/#Input) 原生属性 | object  | - |
+| props | 可传入 [Antd.Input](https://ant.design/components/input-cn/#Input) 原生属性 | object  | - |
+
+### textarea 多行文本框
+
+| 参数 | 说明 | 类型 | 默认值 |
+| ---- | ---- | ---- | ------ |
+| props | 可传入 [Antd.Input.TextArea](https://ant.design/components/input-cn/#Input.TextArea) 原生属性 | object  | - |
 
 ### select 选择器
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
 | options | 选项 | array: [{key: value}] | - |
-| self | 可传入 [Antd.Select](https://ant.design/components/select-cn/#Select-props) 原生属性 | object  | - |
+| props | 可传入 [Antd.Select](https://ant.design/components/select-cn/#Select-props) 原生属性 | object  | - |
 
 ### datepicker  日期选择器
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
-| self | 可传入 [Antd.DatePicker](https://ant.design/components/date-picker-cn/#%E5%85%B1%E5%90%8C%E7%9A%84-API) 原生属性 | object | - |
+| props | 可传入 [Antd.DatePicker](https://ant.design/components/date-picker-cn/#%E5%85%B1%E5%90%8C%E7%9A%84-API) 原生属性 | object | - |
 
 ### checkbox 多选框
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
 | options | 选项 | array: [{key: value}] | - |
-| self | 可传入 [Antd.Checkbox.Group](https://ant.design/components/checkbox-cn/#Checkbox-Group) 原生属性 | object  | - |
+| props | 可传入 [Antd.Checkbox.Group](https://ant.design/components/checkbox-cn/#Checkbox-Group) 原生属性 | object  | - |
 
 ### radio 单选框
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
 | options | 选项 | array: [{key: value}] | - |
-| self | 可传入 [Antd.Radio.Group](https://ant.design/components/radio-cn/#RadioGroup) 原生属性 | object  | - |
+| props | 可传入 [Antd.Radio.Group](https://ant.design/components/radio-cn/#RadioGroup) 原生属性 | object  | - |
 
 ### switch 开关
 
 | 参数 | 说明 | 类型 | 默认值 |
 | ---- | ---- | ---- | ------ |
-| self | 可传入 [Antd.Switch](https://ant.design/components/switch-cn/#API) 原生属性 | object  | - |
+| props | 可传入 [Antd.Switch](https://ant.design/components/switch-cn/#API) 原生属性 | object  | - |
 
 ### formConfig.ajax
 
@@ -191,6 +203,7 @@ formConfig.ajax(url).then(data); // data 是转化后的最终数据,这些数�
 | setFieldsVisible | 修改字段的可见性 | ({fieldname: visible:boolean `or` (current) => boolean})|
 | setFieldsDisabled | 修改字段的可编辑性 | ({fieldname: disabled:boolean `or` (current) => boolean})|
 | setFieldsRules | 修改字段的校验规则 | ({fieldname: rules:array `or` (current) => array}) |
+| setFieldsConfig | 批量修改字段的配置属性('type', 'name', 'remote', 'dependEvents' 不支持修改) | ({[fieldName]: {[prop: newValue or (oldValue) => value  ]}})|
 
 ### formContext 表单业务上下文数据
 
@@ -206,45 +219,55 @@ formConfig.ajax(url).then(data); // data 是转化后的最终数据,这些数�
 扩展字段可访问组件内部的方法，并需要实现指定接口，比如内置 `input` 类型的实现如下：
 
 ```js
-
 // ====== input.js ======
 import React, { Component } from 'react';
 import { Input } from 'antd';
-// 定义字段
+
 export default class FieldInput extends Component {
   render() {
+    // `this.props.config` 获取当前字段配置对象 
+    // `this.props.value`, `this.props.onChange` 实现数据双向绑定
+    // `this.props.form` 能够获取当前表单对象实例 ,从而向上与整个表单互动
+    // `this.props.context` 能够获取当前表单上下文数据对象  
+    let {
+      value, 
+      onChange, 
+      config: { label, disabled, placeholder, props } 
+    } = this.props;
 
-    // 能够获取当前字段配置对象 `this.props.config`，并需要实现 
-    // `{disabled, placeholder, value, onChange}` 属性
+    placeholder = placeholder || '请输入' + label;
 
-    // 能够获取当前表单对象实例 `this.props.form` ，从而向上与整个表单互动
-    // 能够获取当前表单上下文数据对象 `this.props.context`
-    
-    const { form, context, config } = this.props;
-    const { label, disabled = false, placeholder, value, onChange } = config;
+    const _props = {
+      disabled,
+      placeholder,
+      value,
+      onChange,
+      ...props
+    }
+
     return (
-      <Input
-        disabled={disabled}
-        placeholder={placeholder || `请输入${label}`}
-        value={value}
-        onChange={onChange} />
+      <Input {..._props}/>
     )
   }
 }
+// 设定默认值
+FieldInput.initialValue = "";
+// ====== / input.js ======
 
-// 需指定字段默认值
-FieldInput.initialValue = '';
-// ====== /input.js ======
 
 // ===== index.js ======
+import React, { Component } from 'react';
+import render from 'react-dom';
 import Keform , { plugin } from 'ke-form';
-import Input from 'input.js';
+import Input from './input.js';
 
-// 使用前注册 input 类型
+// 注册 input 类型
 plugin('field', 'input', Input);
 
-
-// 在 formConfig 配置中即可引入该类型字段
-// <Keform formConfig={{fields: [{type: input, name: 'fristname'}]}}/>
-
+export default class App extends Component{
+  render () {
+    return  <Keform formConfig={{fields: [{type: ‘input’, name: 'fristname'}]}}/>
+  }
+}
 // ===== /index.js ======
+```

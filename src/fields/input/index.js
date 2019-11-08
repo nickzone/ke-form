@@ -3,17 +3,24 @@ import { Input } from 'antd';
 
 export default class FieldInput extends Component {
   render() {
-    let { label, disabled = false, placeholder, self = {} } = this.props.config;
-    const { value, onChange } = this.props;
+    let { 
+      value, 
+      onChange, 
+      config: { label, disabled, placeholder, props } 
+    } = this.props;
+
     placeholder = placeholder || '请输入' + label;
 
+    const _props = {
+      disabled,
+      placeholder,
+      value,
+      onChange,
+      ...props
+    }
+
     return (
-      <Input
-        disabled={disabled}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange} 
-        {...self}/>
+      <Input {..._props}/>
     )
   }
 }
