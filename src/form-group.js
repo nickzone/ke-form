@@ -9,7 +9,7 @@ export default class FormGroup extends Component {
             {this.props.title}
           </div>
         </div>
-        <Row gutter={{ xs: 8, sm: 16, md: 24 }} className="ke-form-body">
+        <Row gutter={{ xs: 8, sm: 16, md: 24 }} type="flex" justify="start" className="ke-form-body">
           {this.props.children}
         </Row>
       </div>

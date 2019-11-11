@@ -1,9 +1,10 @@
 {
   "name": "ke-form",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "基于antd开发的配置化表单组件",
   "main": "./lib/index.js",
   "module": "./src/index.js",
+  "browser": "./lib/index.js",
   "scripts": {
     "start": "webpack-dev-server --config build/dev.conf.js",
     "build": "npx babel src -d lib --source-maps --copy-files",

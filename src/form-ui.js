@@ -64,13 +64,20 @@ class formUI extends Component {
     )
   }
 
+  getContainerCls = () => {
+    const { className } = this.props;
+    const BASIC_CLASS = "ke-form";
+    
+    return className ? BASIC_CLASS + ' ' +  className : BASIC_CLASS;
+  }
+
   componentDidMount() {
     this.props.onCreate(this.props.form);
   }
 
   render() {
     return (
-      <div className="ke-form">
+      <div className={this.getContainerCls()}>
         <Form>
           {this.renderFields()}
         </Form>

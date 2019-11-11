@@ -5,7 +5,7 @@ export default class FieldText extends Component {
   render() {
     let {
       value,
-      placeholder,
+      config: { placeholder } 
     } = this.props;
 
     return (

@@ -7,7 +7,7 @@ import { DEFAULT_TYPE } from './form-field';
 import FormUI from './form-ui'; // ui
 import FormUIAdapter from './form-ui-adapter'; // ui适配器
 
-export default function FormStore(Comp) {
+export default function FormStore() {
   class EmitterWrapper extends Component {
     constructor(props) {
       super(props);
@@ -411,9 +411,10 @@ export default function FormStore(Comp) {
 
     render() {
       const { formData, formConfig } = this.state;
-      const { formContext } = this.props;
+      const { formContext, className } = this.props;
       FormUIAdapter(FormUI)
       return <this.formCompInstance
+        className={className}
         onCreate={this.onCreate}
         emitter={this.emitter}
         formConfig={formConfig}

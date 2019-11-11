@@ -98,7 +98,7 @@ export const schema = {
         group: "verticle",
         type: "switch", // 开关
         name: "active",
-        label: "启用"
+        label: "启用自我介绍"
       },
       {
         group: "verticle",

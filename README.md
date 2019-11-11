@@ -104,7 +104,7 @@ render(
 | label | 字段label | string | '' | 
 | visible | 字段是否可见 | boolean | true | 
 | disabled | 字段是否可编辑 | boolean | false |
-| self | antd 原生组件属性,注意不要设置和 value 相关的属性，可能引起异常 | object | - |  
+| props || self(旧) | antd 原生组件属性,注意不要设置和 value 相关的属性，可能引起异常 | object | - |  
 | rules | 字段验证规则，配置同 [Ant.Form](https://ant.design/components/form-cn/#%E6%A0%A1%E9%AA%8C%E8%A7%84%E5%88%99) | array | - |
 | placeholder | 字段提示占位符 | string | 组件提供默认值，类似 "请填入 label" |
 | style | 字段布局，继承并覆盖 上文 `formConfig.style` 和 `formConfig.group[i].style` 配置,实现更细粒度的样式控制 | object | - |
@@ -118,7 +118,7 @@ render(
 
 ## formConfig.fields[i].type 表单元素类型
 
-对于每种字段类型，除了支持上述公共 Api ,因为字段本身是基于 antd 表单组件实现的，所以能够支持相应属性，需通过 `self` 配置属性传入, 不要传入 `value` 和 `onChange` 等与表单值有关的属性，会引起状态管理异常。
+对于每种字段类型，除了支持上述公共 Api ,因为字段本身是基于 antd 表单组件实现的，所以能够支持相应属性，需通过 `props` 配置属性传入, 不要传入 `value` 和 `onChange` 等与表单值有关的属性，会引起状态管理异常。
 
 ### text 纯文本
 

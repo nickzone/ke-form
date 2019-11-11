@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import KeForm from 'plugin';
+import KeForm from 'ke-form';
 import { schema } from './schema';
 
 export default class App extends Component {
@@ -12,6 +12,7 @@ export default class App extends Component {
     }
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onReset = this.onReset.bind(this);
   }
 
   onSubmit() {
@@ -22,6 +23,10 @@ export default class App extends Component {
       }
       console.log("验证通过，当前表单值： ", values);
     });
+  }
+
+  onReset() {
+    this.form.resetFields();
   }
 
   onChange(e) {
@@ -44,24 +49,33 @@ export default class App extends Component {
       })
     }
   }
+
+  componentDidMount() {
+    this.form.onValuesChange((value)=>{
+      console.log("更改了；", value);
+    })
+  }
   
   render() {
     const { formConfig, error } = this.state;
 
     return (
       <div>
-        <h3>表单解析结果</h3>
-        {
-          formConfig && !error ? <KeForm formConfig={formConfig} onCreate={(form) => { this.form = form }} /> : null
-        }
-        {
-          error && 'JSON格式错误' 
-        }
-        <button onClick={this.onSubmit}>提交</button>
         <div>
-          <h3>formConfig(表单配置JSON))</h3>
-          <textarea defaultValue={JSON.stringify(formConfig, null, 4)} onChange={this.onChange} style={{width: '100%', height: 300}}/>
+          <h3>表单配置 (props.formConfig))</h3>
+          <textarea defaultValue={JSON.stringify(formConfig, null, 4)} onChange={this.onChange} style={{ width: '100%', height: 300 }} />
         </div>
+        <div>
+          <h3>配置解析结果</h3>
+          {
+            formConfig && !error ? <KeForm className="custom-class" formConfig={formConfig} onCreate={(form) => { this.form = form }} /> : null
+          }
+          {
+            error && 'JSON格式错误'
+          }
+        </div>
+        <button onClick={this.onSubmit}>提交</button>
+        <button onClick={this.onReset}>重置</button>
       </div>
     )
   }
