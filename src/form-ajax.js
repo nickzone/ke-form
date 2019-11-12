@@ -32,7 +32,7 @@ function getData({ formData, formContext, remote }) {
       })
       .catch(e => {
         console.log(e);
-        resolve(null);
+        reject(e);
       })
   });
 }

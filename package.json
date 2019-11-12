@@ -1,6 +1,6 @@
 {
-  "name": "ke-form",
-  "version": "0.3.0",
+  "name": "@ke/ke-form",
+  "version": "0.4.2",
   "description": "基于antd开发的配置化表单组件",
   "main": "./lib/index.js",
   "module": "./src/index.js",
@@ -30,7 +30,7 @@
   },
   "license": "MIT",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "http://registry.npmjs.lianjia.com:7001/"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",

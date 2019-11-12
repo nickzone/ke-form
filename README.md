@@ -1,6 +1,3 @@
-![npm](https://img.shields.io/npm/dm/ke-form?style=flat-square)
-![npm](https://img.shields.io/npm/v/ke-form?style=flat-square)
-
 ## 说明
 
 一个支持配置化的表单（支持表单字段分组）组件，适用以下场景：

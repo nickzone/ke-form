@@ -170,6 +170,7 @@ export default function FormStore() {
         case 'reset':
           const currentField = getFieldByName(target, this.state.formConfig.fields);
           const { remote } = currentField;
+          this.emitter.emit(`${target}:onreset`);
 
           if (remote) {
             const { formData } = this.state;
@@ -183,13 +184,10 @@ export default function FormStore() {
                     options: data
                   }
                 });
-                this.emitter.emit(`${target}:onreset`, data);
               })
               .catch(e => {
                 console.error(e);
               })
-          } else {
-            this.emitter.emit(`${target}:onreset`);
           }
           break;
 
@@ -275,7 +273,11 @@ export default function FormStore() {
         FormAjax
           .getData({ formData, formContext, remote: field.remote })
           .then((data) => {
-            this.emitter.emit(`${field.name}:onreset`, data);
+            this.form.setFieldsConfig({
+              [field.name]: {
+                options: data
+              }
+            });
           })
           .catch(e => {
             console.error(e);
