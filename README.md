@@ -13,7 +13,7 @@
 ## 安装
 
 ```bash·
-npm install ke-form
+npm install @ke/ke-form
 ```
 
 ## 使用
