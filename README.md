@@ -53,7 +53,7 @@ render(
 
 ## 示例
 
-[codesandbox在线示例](https://codesandbox.io/s/solitary-voice-kjusg)
+[在线示例](http://fe.sinan.lianjia.com/components/ui/ke-form.htm)
 
 ## API
 
