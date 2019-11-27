@@ -414,7 +414,6 @@ export default function FormStore() {
     render() {
       const { formData, formConfig } = this.state;
       const { formContext, className } = this.props;
-      FormUIAdapter(FormUI)
       return <this.formCompInstance
         className={className}
         onCreate={this.onCreate}

@@ -22,11 +22,11 @@
   "author": "nickzone<https://github.com/nickzone>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nickzone/ke-form"
+    "url": "http://git.lianjia.com/share-center/ke-form"
   },
-  "homepage": "https://github.com/nickzone/ke-form",
+  "homepage": "http://git.lianjia.com/share-center/ke-form",
   "bugs": {
-    "url": "https://github.com/nickzone/ke-form/issues"
+    "url": "http://git.lianjia.com/share-center/ke-form/issues"
   },
   "license": "MIT",
   "publishConfig": {
