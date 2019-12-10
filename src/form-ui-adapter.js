@@ -33,13 +33,13 @@ export default function (formUI) {
       emitter.emit('onValuesChange', changedValue, allValues);
     },
     onFieldsChange: (props, changedFields, allFields) => {
-      const { emitter } = props;
+      const { emitter, changeField } = props;
       const fields = Object.keys(changedFields);
 
       emitter.emit('onFieldsChange', changedFields, allFields);
       
-      fields.forEach((field) => {
-        emitter.emit(`${field}:change`, changedFields[field].value);
+      fields.forEach((field) => { // 更新表单状态
+        changeField(field, changedFields[field].value);
         fieldStateMap[field] = { ...changedFields[field], value: undefined }
       });
     }

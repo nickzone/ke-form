@@ -22,7 +22,8 @@ export default class FieldDatePicker extends Component {
       placeholder,
       value: value ? moment(value, props.format || defaultFormat) : null,
       onChange: (date, dateString) => { onChange(dateString) },
-      format: defaultFormat
+      format: defaultFormat,
+      ...props
     }
 
     return (

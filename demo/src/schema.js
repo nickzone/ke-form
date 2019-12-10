@@ -57,7 +57,22 @@ export const schema = {
         name: "lastname",
         dependEvents: [
           {
-            target: "firstname"
+            target: "firstname",
+            handle: "show"
+          },
+          {
+            target: "firstname",
+            data: "2",
+            handle: "hide"
+          },
+          {
+            target: "firstname",
+            data: "disabled",
+            handle: "disable"
+          },
+          {
+            target: "firstname",
+            handle: "enable"
           }
         ]
       },

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Emitter from 'component-emitter';
 import FormAjax from './form-ajax';
-import { getFieldByName } from './utils';
+import { getFieldByName, isEqualModel } from './utils';
 import * as Fields from './fields';
 import { DEFAULT_TYPE } from './form-field';
 import FormUI from './form-ui'; // ui
@@ -15,11 +15,11 @@ export default function FormStore() {
       this.emitter = new Emitter(); // 初始化事件管理对象
       this.form = null; // 可交互form实例
       this.state = {
-        formData: this.normalizeFormData(), // 表单显示
+        formData: this.normalizeFormData(), // 表单值
         formConfig: this.normalizeFormConfig() // 表单配置
       };
       this.setAjax();
-      this.initEventHandle();
+      // this.initEventHandle();
     }
 
 
@@ -36,7 +36,7 @@ export default function FormStore() {
       const { formConfig } = this.props;
       formConfig.fields.forEach((field) => {
         field.props = field.props || field.self || {};
-        field.disabled = !! field.disabled;
+        field.disabled = !!field.disabled;
       });
       return formConfig;
     }
@@ -48,11 +48,22 @@ export default function FormStore() {
 
       formConfig.fields.forEach((field) => {
         const { name, type } = field;
-        const initialValue = (Fields[type] || Fields[DEFAULT_TYPE]).initialValue;
+        const initialValue = this.getFieldDefaultValue(type);
         normalLizedFormData[name] = (formData && formData[name]) || initialValue;
       });
 
       return normalLizedFormData;
+    }
+
+    // 获取所有字段
+    getFields = () => {
+      const { formConfig: { fields } } = this.props;
+      return fields;
+    }
+
+    // 获取组件默认值
+    getFieldDefaultValue = (type) => {
+      return (Fields[type] || Fields[DEFAULT_TYPE]).initialValue;
     }
 
     // bind event-handle
@@ -64,200 +75,73 @@ export default function FormStore() {
         // 注册依赖回调
         this.bindDependHandle(field);
         // 初始化remote数据
-        this.initRemote(field);
+        this.loadRemote(field);
       });
     }
 
-    /**
-     * 注册通用回调
-     *
-     * @param {*} field 当前字段配置
-     */
-    bindHandle(field) {
-      // 注册 change 回调
-      this.emitter.on(
-        `${field.name}:change`,
-        (data, reset) => this.handle({
-          target: field.name,
-          type: 'change',
-          data,
-          option: {
-            reset
+    // 更新表单
+    changeField = (name, value) => {
+      const defaultValue = this.getFieldDefaultValue((getFieldByName(name, this.getFields()).type))
+      this.setState((state) => {
+        return {
+          formData: {
+            ...state.formData,
+            [name]: value === undefined ?
+              defaultValue : value
           }
-        })
-      );
-      // 注册 reset 回调
-      this.emitter.on(
-        `${field.name}:reset`,
-        (data) => this.handle({
-          target: field.name,
-          type: 'reset',
-          data
-        })
-      );
-      // 注册 toggleVisible 回调
-      this.emitter.on(
-        `${field.name}:toggleVisible`,
-        (visible) => this.handle({
-          target: field.name,
-          type: 'toggleVisible',
-          option: {
-            visible
-          }
-        })
-      )
-
-      // 注册 toggleDisabled 回调
-      this.emitter.on(
-        `${field.name}:toggleDisabled`,
-        (disabled) => this.handle({
-          target: field.name,
-          type: 'toggleDisabled',
-          option: {
-            disabled
-          }
-        })
-      )
+        }
+      }, () => {
+        this.triggerDepends(name, value);
+      });
     }
 
-    /**
-     * 注册联动回调
-     *
-     * @param {*} field 当前字段配置
-     */
-    bindDependHandle(field) {
-      const DEFAULT_EVENT_TYPE = "change";
-      const DEFAULT_EVENT_HANDLE = "reset";
+    // 触发联动
+    triggerDepends = (_target, value) => {
+      const fields = this.getFields();
 
-      if (field.dependEvents) {
-        // 遍历依赖,注册依赖关系
-        field.dependEvents.forEach((depend) => {
-          const handler = Array.isArray(depend.handler) ?
-            depend.handler : [depend.handler];
+      fields.forEach(field => {
+        const { dependEvents, remote, type, name } = field;
+        if (dependEvents) {
+          dependEvents.forEach(depend => {
+            const { target, type = 'change', data, handle = 'reset' } = depend;
+            // 判断是否满足联动条件
+            if (target !== _target) { return; }
+            if ('data' in depend && !isEqualModel(data, value)) { return; }
+            if (type !== 'change') { return; }
 
-          handler.forEach((item) => {
-            this.emitter.on(
-              `${depend.target}:${depend.type || DEFAULT_EVENT_TYPE}`,
-              (data) => this.handleDepend({
-                data,
-                field: field.name,
-                handler: item || DEFAULT_EVENT_HANDLE
-              })
-            );
-          });
-        });
-      }
-    }
-
-    /**
-     * 通用事件回调，所有的事件都会最终走这里
-     *
-     * @param {*} { target, type, data, option }
-     */
-    handle({ target, type, data, option }) {
-      switch (type) {
-        case 'change':
-          this.setState((state) => {
-            return {
-              formData: {
-                ...state.formData,
-                [target]: data
-              }
-            }
-          });
-          break;
-
-        case 'reset':
-          const currentField = getFieldByName(target, this.state.formConfig.fields);
-          const { remote } = currentField;
-          this.emitter.emit(`${target}:onreset`);
-
-          if (remote) {
-            const { formData } = this.state;
-            const { formContext } = this.props;
-
-            FormAjax
-              .getData({ formData, formContext, remote })
-              .then((data) => {
+            switch (handle) {
+              case 'reset':
+                this.loadRemote(field);
+                this.changeField(name, this.getFieldDefaultValue(type));
+                break;
+              case 'show':
+                this.loadRemote(field);
                 this.form.setFieldsConfig({
-                  [target]: {
-                    options: data
+                  [name]: {
+                    visible: true
                   }
                 });
-              })
-              .catch(e => {
-                console.error(e);
-              })
-          }
-          break;
-
-        case 'toggleVisible':
-          this.setState((state) => {
-            state.formConfig.fields.forEach((field) => {
-              if (field.name === target) {
-                field.visible = option.visible
-              }
-            });
-            return state;
-          });
-          break;
-
-        case 'toggleDisabled':
-          this.setState((state) => {
-            state.formConfig.fields.forEach((field) => {
-              if (field.name === target) {
-                field.disabled = option.disabled
-              }
-            });
-            return state;
-          });
-          break;
-      }
-    }
-
-    /**
-     * 依赖回调，触发事件可被通用回调或字段对应名称回调方法捕获
-     *
-     * @param {*} { field, handler }
-     * @memberof EmitterWrapper
-     */
-    handleDepend({ field, handler }) {
-      const splitIndex = handler.indexOf(':');
-      let handlerName = handler;
-      let handlerValue = undefined;
-
-      if (splitIndex > -1) {
-        handlerName = handle.slice(0, splitIndex);
-        handlerValue = handle.slice(splitIndex);
-      }
-
-      const currentField = getFieldByName(field, this.state.formConfig.fields);
-
-      switch (handlerName) {
-        case 'reset':
-          let value = (Fields[currentField.type] || Fields[DEFAULT_TYPE]).initialValue;
-          if (handlerValue) {
-            value = JSON.parse(handlerValue);
-          }
-
-          this.form.setFieldsValue({
-            [field]: value
-          },() => {
-            this.emitter.emit(`${field}:reset`, value);
-          });
-
-          break;
-
-        case 'show':
-        case 'hide':
-          this.emitter.emit(`${field}:toggleVisible`, handlerName === 'show');
-          break;
-
-        case 'disable':
-        case 'enable':
-          this.emitter.emit(`${field}:toggleDisabled`, handleParams == 'disable');
-          break;
-      }
+                break;
+              case 'hide':
+                this.changeField(name, this.getFieldDefaultValue(type));
+                this.form.setFieldsConfig({
+                  [name]: {
+                    visible: false
+                  }
+                });
+                break;
+              case 'disable':
+              case 'enable':
+                // BUG: 待修复
+                this.form.setFieldsConfig({
+                  [name]: {
+                    disabled: handle === 'disable'
+                  }
+                });
+            }
+          })
+        }
+      });
     }
 
     /**
@@ -265,7 +149,7 @@ export default function FormStore() {
      *
      * @param {*} field
      */
-    initRemote = (field) => {
+    loadRemote = (field) => {
       if (field.remote) {
         const { formData } = this.state;
         const { formContext } = this.props;
@@ -415,12 +299,13 @@ export default function FormStore() {
       const { formData, formConfig } = this.state;
       const { formContext, className } = this.props;
       return <this.formCompInstance
+        formData={formData}
+        formConfig={formConfig}
+        formContext={formContext}
         className={className}
+        changeField={this.changeField}
         onCreate={this.onCreate}
         emitter={this.emitter}
-        formConfig={formConfig}
-        formData={formData}
-        formContext={formContext}
       />;
     }
   }
