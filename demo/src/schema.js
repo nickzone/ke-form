@@ -84,6 +84,14 @@ export const schema = {
         options: [
           { key: "beijing", value: "北京" },
           { key: "shanghai", value: "上海" }
+        ],
+        remote: {
+          url: "http://getOptions?firstname=${firstname}"
+        },
+        dependEvents: [
+          {
+            target: "firstname"
+          }
         ]
       },
       {

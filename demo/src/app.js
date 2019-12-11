@@ -8,7 +8,15 @@ export default class App extends Component {
     this.form = null;
     this.state = {
       error: false,
-      formConfig: schema
+      formConfig: {
+        ...schema,
+        ajax: (url) => {
+          console.log("请求了", url);
+          return new Promise((resolve) => {
+            resolve([{ key: 0, value: Math.random() }]);
+          })
+        }
+      }
     }
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -17,7 +25,7 @@ export default class App extends Component {
 
   onSubmit() {
     this.form.validateFieldsAndScroll((err, values) => {
-      if(err) {
+      if (err) {
         console.log("验证不通过：", err)
         return
       }
@@ -51,11 +59,11 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    this.form.onValuesChange((value)=>{
+    this.form.onValuesChange((value) => {
       console.log("更改了；", value);
     })
   }
-  
+
   render() {
     const { formConfig, error } = this.state;
 
@@ -68,7 +76,9 @@ export default class App extends Component {
         <div>
           <h3>配置解析结果</h3>
           {
-            formConfig && !error ? <KeForm className="custom-class" formConfig={formConfig} onCreate={(form) => { this.form = form }} /> : null
+            formConfig && !error ? <KeForm
+              className="custom-class"
+              formConfig={formConfig} onCreate={(form) => { this.form = form }} /> : null
           }
           {
             error && 'JSON格式错误'

@@ -19,7 +19,7 @@ export default function FormStore() {
         formConfig: this.normalizeFormConfig() // 表单配置
       };
       this.setAjax();
-      // this.initEventHandle();
+      this.loadOptions(); // 加载字段选项
     }
 
 
@@ -66,14 +66,9 @@ export default function FormStore() {
       return (Fields[type] || Fields[DEFAULT_TYPE]).initialValue;
     }
 
-    // bind event-handle
-    initEventHandle = () => {
+    loadOptions = () => {
       // 遍历字段配置
       this.state.formConfig.fields.forEach((field) => {
-        // 注册通用回调
-        this.bindHandle(field);
-        // 注册依赖回调
-        this.bindDependHandle(field);
         // 初始化remote数据
         this.loadRemote(field);
       });
@@ -100,7 +95,7 @@ export default function FormStore() {
       const fields = this.getFields();
 
       fields.forEach(field => {
-        const { dependEvents, remote, type, name } = field;
+        const { dependEvents, name } = field;
         if (dependEvents) {
           dependEvents.forEach(depend => {
             const { target, type = 'change', data, handle = 'reset' } = depend;
