@@ -110,8 +110,9 @@ render(
 | remote.dependFields | 数据依赖，当form初始化和字段重置时，根据该依赖决定是否加载新的选项数据 | array: ["field1","field2"] | [] |
 | dependEvents | 字段联动配置，基于事件模型实现，描述监听目标字段发生值改变时，当前字段如何联动改变 | array: [{target, type, handler}] | - |
 | dependEvents[i].target | 所监听目标字段key值 | string | '' |
-| dependEvents[i].type | 所监听目标字段值值改变类型 | string: `change` (值改变) , `change:someValue` (等于特定值) | 'change' |
-| dependEvents[i].handler | 触发当前字段回调事件 | string: `reset` (重置) ,  `show / hide` (切换显示隐藏), `disable / enable` (切换可编辑) | 'reset' |
+| dependEvents[i].type | 所监听目标字段值值改变类型 | string: `change` (值改变：默认)| 'change' |
+| dependEvents[i].value | 所监听目标字段值值改变类型 | any： 当字段值改变等于此值时，触发联动 | - |
+| dependEvents[i].handler | 触发当前字段回调事件 | string: `reset` (重置值和重置选项) ,  `show / hide` (切换显示隐藏), `disable / enable` (切换可编辑) | 'reset' |
 
 ## formConfig.fields[i].type 表单元素类型
 

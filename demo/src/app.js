@@ -59,8 +59,8 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    this.form.onValuesChange((value) => {
-      console.log("更改了；", value);
+    this.form.onFieldsChange((value) => {
+      console.log("更改了：", value);
     })
   }
 

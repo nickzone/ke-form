@@ -19,7 +19,6 @@ export default function FormStore() {
         formConfig: this.normalizeFormConfig() // 表单配置
       };
       this.setAjax();
-      this.loadOptions(); // 加载字段选项
     }
 
 
@@ -66,11 +65,19 @@ export default function FormStore() {
       return (Fields[type] || Fields[DEFAULT_TYPE]).initialValue;
     }
 
+    // 初始化选项
     loadOptions = () => {
       // 遍历字段配置
-      this.state.formConfig.fields.forEach((field) => {
+      this.getFields().forEach((field) => {
         // 初始化remote数据
         this.loadRemote(field);
+      });
+    }
+
+    // 初始化联动
+    initDepends = () => {
+      this.getFields().forEach(field => {
+        this.triggerDepends(field.name, this.state.formData[field.name]);
       });
     }
 
@@ -171,16 +178,16 @@ export default function FormStore() {
      */
     onCreate = (form) => {
       this.form = form;
-      const { onCreate } = this.props;
-
       // mixin config setter && value-listener
       this.mixInFieldEvent(form);
       this.mixInConfigSetter(form);
       this.mixInVisibleSetter(form);
       this.mixInDisabledSetter(form);
       this.mixInRulesSetter(form);
-
-      onCreate(form);
+      
+      this.loadOptions(); // 加载字段选项
+      this.initDepends(); // 初始化联动
+      this.props.onCreate(form);
     }
 
     /**

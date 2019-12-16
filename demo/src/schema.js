@@ -34,6 +34,12 @@ export const schema = {
     fields: [
       {
         group: "base",
+        type: "text",
+        label: "文本",
+        name: "text"
+      },
+      {
+        group: "base",
         type: "input",
         label: "姓氏",
         name: "firstname",
@@ -45,16 +51,13 @@ export const schema = {
         }]
       },
       {
-        group: "base",
-        type: "text",
-        label: "文本",
-        name: "text"
-      },
-      {
         type: "input",
         group: "base",
         label: "名称",
         name: "lastname",
+        rules: [{
+          required: true
+        }],
         dependEvents: [
           {
             target: "firstname",
@@ -92,13 +95,19 @@ export const schema = {
           {
             target: "firstname"
           }
-        ]
+        ],
+        rules: [{
+          required: true
+        }]
       },
       {
         type: "datepicker", // 日期选择
         group: "base",
         name: "date",
-        label: "日期"
+        label: "日期",
+        rules: [{
+          required: true
+        }]
       },
       {
         group: "base",
