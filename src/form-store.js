@@ -18,6 +18,7 @@ export default function FormStore() {
         formData: this.normalizeFormData(), // 表单值
         formConfig: this.normalizeFormConfig() // 表单配置
       };
+      this.fieldCache = {}; // 缓存每一次改变值
       this.setAjax();
     }
 
@@ -83,6 +84,8 @@ export default function FormStore() {
 
     // 更新表单
     changeField = (name, value) => {
+      if (isEqualModel(this.fieldCache[name], value)) { return ; }
+      this.fieldCache[name] = value;
       const defaultValue = this.getFieldDefaultValue((getFieldByName(name, this.getFields()).type))
       this.setState((state) => {
         return {
@@ -113,8 +116,8 @@ export default function FormStore() {
 
             switch (handle) {
               case 'reset':
-                this.loadRemote(field);
                 if (!noReset) {
+                  this.loadRemote(field);
                   this.changeField(name, this.getFieldDefaultValue(type));
                 }
                 break;
