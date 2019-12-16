@@ -16,6 +16,9 @@ export default class App extends Component {
             resolve([{ key: 0, value: Math.random() }]);
           })
         }
+      },
+      formData: {
+        lastname: "initialValue"
       }
     }
     this.onChange = this.onChange.bind(this);
@@ -65,7 +68,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { formConfig, error } = this.state;
+    const { formConfig, error, formData } = this.state;
 
     return (
       <div>
@@ -78,7 +81,8 @@ export default class App extends Component {
           {
             formConfig && !error ? <KeForm
               className="custom-class"
-              formConfig={formConfig} onCreate={(form) => { this.form = form }} /> : null
+              formData={formData}
+              formConfig={formConfig} onCreate={(form) => { window.form = this.form = form }} /> : null
           }
           {
             error && 'JSON格式错误'
