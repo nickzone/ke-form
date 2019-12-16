@@ -1,6 +1,6 @@
 {
   "name": "@ke/ke-form",
-  "version": "1.0.1-0",
+  "version": "1.0.2-0",
   "description": "基于antd开发的配置化表单组件",
   "main": "./lib/index.js",
   "module": "./src/index.js",
