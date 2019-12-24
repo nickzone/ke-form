@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { Form } from 'antd';
 import { log } from './utils';
+import { getField } from './fields';
 
-export const DEFAULT_TYPE = 'input';
+export const fieldTypes = {};
 
 export default class FormField extends Component {
   constructor(props) {
@@ -30,14 +31,7 @@ export default class FormField extends Component {
     const { config, form, labelCol, wrapperCol } = this.props;
     const { getFieldDecorator } = form;
     const type = config.type;
-    let FieldComp = FormField[type];
-
-    if (!FieldComp) {
-      if(type) {
-        log('error', `The type '${type}' of field ${config.label} is uninstalled, render as input instead.`);
-      }
-      FieldComp = FormField[DEFAULT_TYPE];
-    }
+    let FieldComp = getField(type);
     
     return (
       <Form.Item
@@ -73,15 +67,4 @@ export default class FormField extends Component {
       emitter.off(`${config.name}:onreset`, this.onReset);
     }
   }
-}
-
-/**
- * 注册字段
- *
- * @export
- * @param {*} name 字段类型
- * @param {*} component 字段组件
- */
-export function addField(name, component) {
-  FormField[name] = FormField[name] || component;
 }

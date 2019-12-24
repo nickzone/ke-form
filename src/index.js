@@ -1,13 +1,5 @@
-import FormStore from './form-store'; // 业务容器
-import { addField } from './form-field';
-import * as Fields from './fields';
-
-const WrapperedForm = FormStore();
-
-// 注册内置字段
-for (const item in Fields) {
-  plugin('field', item, Fields[item]);
-}
+import FormStore from './form-store';
+import { addField } from './fields'; 
 
 /**
  * 提供插件扩展方法
@@ -24,4 +16,4 @@ export function plugin(type, ...rest) {
   }
 }
 
-export default WrapperedForm;
+export default FormStore;

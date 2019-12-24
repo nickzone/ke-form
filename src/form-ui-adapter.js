@@ -1,6 +1,5 @@
 import { Form } from 'antd';
-import * as Fields from './fields';
-import { DEFAULT_TYPE } from './form-field';
+import { getField, DEFAULT_TYPE } from './fields';
 
 export default function (formUI) {
   const fieldStateMap = {}; // 缓存表单数据
@@ -8,21 +7,22 @@ export default function (formUI) {
     mapPropsToFields: (props) => {
       const { formConfig: { fields }, formData } = props;
       let map = {};
-      let value = Fields[DEFAULT_TYPE].initialValue;
 
       fields.forEach((field) => {
-        // 如是字段值为 undefined , 则设置为当前字段类型的初始值，
-        // 如果字段类型不存在，则设置为默认类型的初始值
+        let value = getField(DEFAULT_TYPE, 'initialValue');
+
         if (formData[field.name] !== undefined) {
-          value = formData[field.name]
-        } else if (Fields[field.type]) {
-          value = Fields[field.type].initialValue
+          value = formData[field.name];
+        } else if ('initialValue' in field) {
+          value = field.initialValue;
+        } else if (getField([field.type])) {
+          value = getField(field.type, 'initialValue');
         }
 
         map[field.name] = Form.createFormField({ 
           ...(fieldStateMap[field.name] || {}),
           value
-        })
+        });
       });
 
       return map;
