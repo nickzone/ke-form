@@ -112,7 +112,7 @@ export default class FormStore extends Component {
           if (target !== _target) { return; }
           if ('data' in depend && !isEqualModel(data, value)) { return; }
           if (type !== 'change') { return; }
-
+          
           switch (handle) {
             case 'reset':
               if (!noReset) {
@@ -138,7 +138,6 @@ export default class FormStore extends Component {
               break;
             case 'disable':
             case 'enable':
-              // BUG: 待修复
               this.form.setFieldsConfig({
                 [name]: {
                   disabled: handle === 'disable'
