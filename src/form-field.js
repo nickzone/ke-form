@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Form } from 'antd';
-import { log } from './utils';
 import { getField } from './fields';
 
 export const fieldTypes = {};

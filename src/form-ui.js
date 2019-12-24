@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Col } from 'antd';
+import { Form, Col, Row } from 'antd';
 import Field from './form-field';
 import FieldGroup from './form-group';
 import './index.css';
@@ -11,7 +11,11 @@ class formUI extends Component {
 
     // 不需要分组，直接渲染
     if (!groups) {
-      return this.renderArea(fields, style);
+      return (
+        <Row gutter={{ xs: 8, sm: 16, md: 24 }} type="flex" justify="start">
+          {this.renderArea(fields, style)}
+        </Row>
+      );
     }
 
     // 否则，需要渲染分组
