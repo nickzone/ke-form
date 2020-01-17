@@ -44,9 +44,7 @@ module.exports = {
     ]
   },
   resolve: {
-    alias: {
-      'plugin': path.resolve(__dirname, '../lib/index.js')
-    }
+    symlinks: false
   },
   devServer: {
     historyApiFallback: true,

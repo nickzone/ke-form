@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import KeForm from '@ke/ke-form/src';
+import KeForm from '@ke/ke-form';
 import { schema } from './schema';
 
 export default class App extends Component {

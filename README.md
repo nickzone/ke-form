@@ -212,7 +212,7 @@ formConfig.ajax(url).then(data); // data 是转化后的最终数据,这些数�
 
 ### 对于不支持的字段，如何快速扩展？
 
-提供方法 `plugin('field','fieldType', Component)` 扩展字段，事实上内置字段也是通过该方法进行扩展的。
+提供方法 `plugin('field','fieldType', Component, options?:{initialValue? = ''})` 扩展字段，事实上内置字段也是通过该方法进行扩展的。
 
 扩展字段可访问组件内部的方法，并需要实现指定接口，比如内置 `input` 类型的实现如下：
 
@@ -248,10 +248,7 @@ export default class FieldInput extends Component {
     )
   }
 }
-// 设定默认值
-FieldInput.initialValue = "";
 // ====== / input.js ======
-
 
 // ===== index.js ======
 import React, { Component } from 'react';
@@ -260,7 +257,9 @@ import Keform , { plugin } from 'ke-form';
 import Input from './input.js';
 
 // 注册 input 类型
-plugin('field', 'input', Input);
+plugin('field', 'input', Input, {
+  initialValue: '' // 默认值是空字符串，所以本例也可以不指定
+});
 
 export default class App extends Component{
   render () {

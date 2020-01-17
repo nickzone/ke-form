@@ -35,10 +35,9 @@ export function getField(type, prop) {
  * @param {*} component 字段组件
  */
 export function addField(name, component, options = {}) {
-  if ('initialValue' in options) {
-    component.initialValue = option.initialValue
-  }
+  component.initialValue =  'initialValue' in options ? option.initialValue : '';
   fieldTypes[name] = fieldTypes[name] || component;
 }
 
+// 默认类型，没有配置type按input渲染
 export const DEFAULT_TYPE = 'input';
