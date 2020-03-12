@@ -11,15 +11,15 @@ export default class FormField extends Component {
   }
 
   componentDidMount() {
-    const { config, emitter } = this.props;
-    // 如果字段实现了onReset接口，则需要注册onreset回调
-    if (this.fieldRef.onReset) {
-      emitter.on(`${config.name}:onreset`, this.onReset)
-    }
+    const { emitter } = this.props;
+    emitter.on('reset', this.onReset);
   }
 
-  onReset(data) {
-    this.fieldRef.onReset.call(this.fieldRef,data);
+  onReset(resetName) {
+    const { name } = this.props.config;
+    if (resetName === name) {
+      this.fieldRef.onReset && this.fieldRef.onReset();
+    }
   }
 
   bindRef(fieldRef) {
@@ -27,7 +27,7 @@ export default class FormField extends Component {
   }
 
   renderField() {
-    const { config, form, labelCol, wrapperCol } = this.props;
+    const { config, form, labelCol, wrapperCol, context } = this.props;
     const { getFieldDecorator } = form;
     const type = config.type;
     let FieldComp = getField(type);
@@ -44,6 +44,7 @@ export default class FormField extends Component {
           })(<FieldComp
             ref={this.bindRef.bind(this)}
             config={config}
+            context={context}
             form={form} />
           )
         }
@@ -60,10 +61,7 @@ export default class FormField extends Component {
   }
 
   componentWillUnmount() {
-    const { config, emitter } = this.props;
-
-    if (this.fieldRef.onReset) {
-      emitter.off(`${config.name}:onreset`, this.onReset);
-    }
+    const { emitter } = this.props;
+    emitter.off('reset', this.onReset);
   }
 }

@@ -44,7 +44,7 @@ class formUI extends Component {
   }
 
   renderArea(fields, parentStyle) {
-    const { formConfig, emitter } = this.props;
+    const { emitter, form, formContext} = this.props;
 
     return (
       fields.map((item) => {
@@ -59,8 +59,8 @@ class formUI extends Component {
               labelCol={labelCol}
               wrapperCol={wrapperCol}
               emitter={emitter}
-              form={this.props.form}
-              context={this.props.formContext}
+              form={form}
+              context={formContext}
               config={item} />
           </Col>
         )

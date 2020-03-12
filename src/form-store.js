@@ -75,7 +75,7 @@ export default class FormStore extends Component {
   // 初始化联动
   initDepends = () => {
     this.getFields().forEach(field => {
-      this.triggerDepends(field.name, this.state.formData[field.name], true);
+      this.triggerDepends(field.name, this.state.formData[field.name], false);
     });
   }
 
@@ -95,12 +95,12 @@ export default class FormStore extends Component {
         }
       }
     }, () => {
-      this.triggerDepends(name, value);
+      this.triggerDepends(name, value, true);
     });
   }
 
   // 触发联动
-  triggerDepends = (_target, value, noReset) => {
+  triggerDepends = (_target, value, reset) => {
     const fields = this.getFields();
 
     fields.forEach(field => {
@@ -115,9 +115,10 @@ export default class FormStore extends Component {
           
           switch (handle) {
             case 'reset':
-              if (!noReset) {
+              if (reset) {
                 this.loadRemote(field);
                 this.changeField(name, this.getFieldDefaultValue(field));
+                this.emitter.emit('reset', name);
               }
               break;
             case 'show':

@@ -80,6 +80,7 @@ export default class App extends Component {
           <h3>配置解析结果</h3>
           {
             formConfig && !error ? <KeForm
+              formContext={{a:1}}
               className="custom-class"
               formData={formData}
               formConfig={formConfig} onCreate={(form) => { window.form = this.form = form }} /> : null
