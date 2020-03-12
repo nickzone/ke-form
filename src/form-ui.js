@@ -59,8 +59,8 @@ class formUI extends Component {
               labelCol={labelCol}
               wrapperCol={wrapperCol}
               emitter={emitter}
-              formConfig={formConfig}
               form={this.props.form}
+              context={this.props.formContext}
               config={item} />
           </Col>
         )
