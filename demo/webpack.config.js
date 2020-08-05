@@ -46,7 +46,7 @@ module.exports = {
   resolve: {
     symlinks: false,
     alias: {
-      '@ke/ke-form': path.resolve(__dirname, '../lib')
+      'ke-form': path.resolve(__dirname, '../lib')
     }
   },
   devServer: {
