@@ -1,12 +1,12 @@
 {
-  "name": "@ke/ke-form",
+  "name": "ke-form",
   "version": "1.0.8",
   "description": "基于antd开发的配置化表单组件",
   "main": "./lib/index.js",
   "module": "./src/index.js",
   "browser": "./lib/index.js",
   "scripts": {
-    "start": "webpack-dev-server --config build/dev.conf.js",
+    "start": "cd demo && yarn && npm run dev",
     "build": "npx babel src -d lib --source-maps --copy-files",
     "prepublish": "npm run build"
   },
@@ -17,21 +17,19 @@
     "config"
   ],
   "files": [
-    "lib"
+    "lib",
+    "src"
   ],
   "author": "nickzone<https://github.com/nickzone>",
   "repository": {
     "type": "git",
-    "url": "http://git.lianjia.com/share-center/ke-form"
+    "url": "https://github.com/nickzone/ke-form"
   },
-  "homepage": "http://git.lianjia.com/share-center/ke-form",
+  "homepage": "https://github.com/nickzone/ke-form",
   "bugs": {
-    "url": "http://git.lianjia.com/share-center/ke-form/issues"
+    "url": "https://github.com/nickzone/ke-form/issues"
   },
   "license": "MIT",
-  "publishConfig": {
-    "registry": "http://registry.npmjs.lianjia.com:7001/"
-  },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.5",

@@ -44,7 +44,10 @@ module.exports = {
     ]
   },
   resolve: {
-    symlinks: false
+    symlinks: false,
+    alias: {
+      '@ke/ke-form': path.resolve(__dirname, '../lib')
+    }
   },
   devServer: {
     historyApiFallback: true,
