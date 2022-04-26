@@ -10,6 +10,8 @@
 
 * 对于没有的字段，能够快速 `扩展` 自定义字段。
 
+[在线示例](https://codesandbox.io/s/currying-violet-ppoh76)
+
 ## 安装
 
 ```bash·
@@ -50,10 +52,6 @@ render(
         onCreate={(form) => {console.log(form)}} // 获取可交互表单实例，用于获取表单值，修改配置等
     />, document.body);
 ```
-
-## 示例
-
-[在线示例](http://fe.efficiency.ke.com/components/ke-form.html)
 
 ## API
 
