@@ -12,7 +12,7 @@
 
 [在线示例](https://codesandbox.io/s/currying-violet-ppoh76)
 
-## 安装2
+## 安装
 
 ```bash
 npm install ke-form
