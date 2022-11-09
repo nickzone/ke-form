@@ -14,7 +14,7 @@
 
 ## 安装
 
-```bash·
+```bash
 npm install ke-form
 ```
 
